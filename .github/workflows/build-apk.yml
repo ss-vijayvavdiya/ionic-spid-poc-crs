@@ -1,0 +1,51 @@
+# Build Android APK for SPID POC mobile app
+# Runs on push to main and on manual trigger
+name: Build APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: mobile/package-lock.json
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'tools platform-tools platforms;android-34 build-tools;34.0.0'
+
+      - name: Install dependencies
+        run: cd mobile && npm ci
+
+      - name: Build web app
+        run: cd mobile && npm run build
+
+      - name: Add Cordova Android platform
+        run: cd mobile && npx cordova platform add android
+
+      - name: Build APK
+        run: cd mobile && npx cordova build android --no-telemetry
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: spid-poc-debug-apk
+          path: mobile/platforms/android/app/build/outputs/apk/debug/*.apk
