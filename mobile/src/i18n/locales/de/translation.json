@@ -44,7 +44,8 @@
     "card": "Karte",
     "wallet": "Wallet",
     "split": "Split",
-    "noProducts": "Keine Produkte im Warenkorb"
+    "noProducts": "Keine Produkte im Warenkorb",
+    "receiptIssued": "Beleg"
   },
   "receipts": {
     "title": "Belege",

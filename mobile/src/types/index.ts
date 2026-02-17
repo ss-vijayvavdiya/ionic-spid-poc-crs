@@ -55,13 +55,13 @@ export interface Receipt {
   number?: string;
   issuedAt: string;
   status: ReceiptStatus;
-  syncStatus: SyncStatus;
+  syncStatus?: SyncStatus;
   paymentMethod: PaymentMethod;
   currency: string;
   subtotalCents: number;
   taxCents: number;
   totalCents: number;
   items: ReceiptItem[];
-  createdOffline: boolean;
-  syncAttempts: number;
+  createdOffline?: boolean;
+  syncAttempts?: number;
 }

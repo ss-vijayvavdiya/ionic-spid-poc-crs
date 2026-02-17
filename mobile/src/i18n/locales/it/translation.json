@@ -44,7 +44,8 @@
     "card": "Carta",
     "wallet": "Portafoglio",
     "split": "Split",
-    "noProducts": "Nessun prodotto nel carrello"
+    "noProducts": "Nessun prodotto nel carrello",
+    "receiptIssued": "Scontrino"
   },
   "receipts": {
     "title": "Scontrini",

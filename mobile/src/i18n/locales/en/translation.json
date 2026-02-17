@@ -44,7 +44,8 @@
     "card": "Card",
     "wallet": "Wallet",
     "split": "Split",
-    "noProducts": "No products in cart"
+    "noProducts": "No products in cart",
+    "receiptIssued": "Receipt"
   },
   "receipts": {
     "title": "Receipts",
