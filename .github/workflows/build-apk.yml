@@ -33,7 +33,7 @@ jobs:
           packages: 'tools platform-tools platforms;android-34 build-tools;34.0.0'
 
       - name: Install dependencies
-        run: cd mobile && npm ci
+        run: cd mobile && npm ci --legacy-peer-deps
 
       - name: Build web app
         run: cd mobile && npm run build
