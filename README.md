@@ -120,7 +120,7 @@ Put the values in `server/.env` (see [Running the POC](#5-running-the-poc)).
 
 1. **Clone / open** the repo and install dependencies:
    ```bash
-   cd ionic-spid-poc
+   cd ionic-spid-poc-crs
    npm install
    cd server && npm install && cd ..
    cd mobile && npm install && cd ..
@@ -266,7 +266,7 @@ The app will install on the emulator or connected device. Tap **Login with SPID*
 ## Repository layout (file tree)
 
 ```text
-ionic-spid-poc/
+ionic-spid-poc-crs/
 ├── README.md
 ├── package.json              # Root scripts: install:all, server, mobile:android, ngrok:update
 ├── .gitignore
