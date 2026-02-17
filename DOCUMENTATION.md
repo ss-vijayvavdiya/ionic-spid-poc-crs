@@ -64,12 +64,12 @@ flowchart TB
         APP[Ionic React + Cordova App]
     end
     subgraph OurBackend["Our Backend (Node.js)"]
-        API[REST API /auth, /api]
+        API["REST API /auth, /api"]
     end
     subgraph External["External Services"]
         NGROK[ngrok HTTPS]
         SIGNICAT[Signicat Sandbox]
-        SPID[SPID IdP / Demo]
+        SPID["SPID IdP / Demo"]
     end
     U <--> APP
     APP <--> NGROK
@@ -125,16 +125,16 @@ flowchart TB
     subgraph App["Mobile App"]
         A1[Login screen]
         A2[Receive callback URL]
-        A3[Call /auth/exchange]
+        A3["Call /auth/exchange"]
         A4[Store our JWT]
-        A5[Call /api/me]
+        A5["Call /api/me"]
     end
     subgraph Backend["Our Backend"]
-        B1[/auth/spid/start]
-        B2[/auth/callback]
-        B3[/auth/exchange]
+        B1["/auth/spid/start"]
+        B2["/auth/callback"]
+        B3["/auth/exchange"]
         B4[Sign our JWT]
-        B5[/api/me]
+        B5["/api/me"]
     end
     subgraph Signicat["Signicat"]
         S1[Authorize]
@@ -257,17 +257,17 @@ flowchart TD
     B -->|Yes| D[Home screen]
     C --> E[Tap Login with SPID]
     E --> F[System browser opens]
-    F --> G[Signicat / SPID login]
+    F --> G["Signicat / SPID login"]
     G --> H[Callback page in browser]
     H --> I[User taps Open app]
-    I --> J[handleOpenURL: smartsense://...]
+    I --> J["handleOpenURL: smartsense://..."]
     J --> K[Parse code, state]
-    K --> L[POST /auth/exchange]
+    K --> L["POST /auth/exchange"]
     L --> M{Success?}
     M -->|Yes| N[Store JWT, go to Home]
     M -->|No| O[Alert error]
     N --> D
-    D --> P[GET /api/me]
+    D --> P["GET /api/me"]
     P --> Q[Show user JSON]
     Q --> R[Logout]
     R --> C
@@ -294,7 +294,7 @@ flowchart LR
     ID --> V
     J --> S
     S --> R
-    R --> API[/api/me]
+    R --> API["/api/me"]
 ```
 
 - **Signicat** returns an **ID token** (and access token) after code exchange. We use the ID token for **claims** (sub, name, email, etc.).
@@ -307,8 +307,8 @@ flowchart LR
 flowchart LR
     subgraph Callback["Callback page (our backend)"]
         H[HTML]
-        L1[Open app link<br/>smartsense://auth/callback?code&state]
-        L2[Continue same URL<br/>https://.../auth/callback?code&state]
+        L1["Open app link<br/>smartsense://auth/callback?code&state"]
+        L2["Continue same URL<br/>https://.../auth/callback?code&state"]
         H --> L1
         H --> L2
     end
@@ -319,7 +319,7 @@ flowchart LR
         AppLinks -.->|"If host verified"| App
     end
     App --> Handler[handleOpenURL]
-    Handler --> Exchange[POST /auth/exchange]
+    Handler --> Exchange["POST /auth/exchange"]
 ```
 
 - **Primary path**: User taps **“Open app (finish login)”** → `smartsense://auth/callback?code=...&state=...` → Android opens our app → Cordova plugin sets `handleOpenURL` → app parses and calls `/auth/exchange`.
