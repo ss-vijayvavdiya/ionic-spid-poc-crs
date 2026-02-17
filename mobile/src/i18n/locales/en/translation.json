@@ -45,7 +45,8 @@
     "wallet": "Wallet",
     "split": "Split",
     "noProducts": "No products in cart",
-    "receiptIssued": "Receipt"
+    "receiptIssued": "Receipt",
+    "savedOffline": "Receipt saved. Will sync when online."
   },
   "receipts": {
     "title": "Receipts",
@@ -94,7 +95,8 @@
     "printer": "Printer",
     "businessProfile": "Business Profile",
     "reports": "Reports",
-    "support": "Support"
+    "support": "Support",
+    "pendingSync": "{{count}} receipt(s) pending sync"
   },
   "language": {
     "title": "Language",

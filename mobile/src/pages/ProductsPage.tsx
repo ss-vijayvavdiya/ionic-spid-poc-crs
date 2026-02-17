@@ -22,7 +22,9 @@ import { useHistory } from 'react-router-dom';
 import HeaderBar from '../components/HeaderBar';
 import { formatCents } from '../utils/money';
 import { useMerchant } from '../contexts/MerchantContext';
+import { useConnectivity } from '../contexts/ConnectivityContext';
 import { fetchProducts } from '../api/products';
+import { getProducts, upsertProducts } from '../store/productsRepo';
 import type { Product } from '../types';
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -38,6 +40,7 @@ const ProductsPage: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const { merchantId } = useMerchant();
+  const { isOnline } = useConnectivity();
   const [search, setSearch] = useState('');
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,15 +57,21 @@ const ProductsPage: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const list = await fetchProducts(merchantId);
-      setProducts(list);
+      if (isOnline) {
+        const list = await fetchProducts(merchantId);
+        await upsertProducts(list);
+        setProducts(list);
+      } else {
+        const list = await getProducts(merchantId);
+        setProducts(list);
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load');
       setToast(t('common.error'));
     } finally {
       setLoading(false);
     }
-  }, [merchantId, t]);
+  }, [merchantId, isOnline, t]);
 
   useEffect(() => {
     loadProducts();

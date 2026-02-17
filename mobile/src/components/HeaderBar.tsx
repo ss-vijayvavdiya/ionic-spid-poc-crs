@@ -4,6 +4,8 @@
 import React from 'react';
 import { IonHeader, IonToolbar, IonTitle, IonButtons, IonMenuButton } from '@ionic/react';
 import OfflineBadge from './OfflineBadge';
+import { useConnectivity } from '../contexts/ConnectivityContext';
+import { useSync } from '../contexts/SyncContext';
 
 interface HeaderBarProps {
   title: string;
@@ -11,11 +13,13 @@ interface HeaderBarProps {
   pendingSyncCount?: number;
 }
 
-const HeaderBar: React.FC<HeaderBarProps> = ({
-  title,
-  isOffline = false,
-  pendingSyncCount = 0,
-}) => (
+const HeaderBar: React.FC<HeaderBarProps> = ({ title, isOffline: isOfflineProp, pendingSyncCount: pendingProp }) => {
+  const { isOnline } = useConnectivity();
+  const { pendingCount } = useSync();
+  const isOffline = isOfflineProp ?? !isOnline;
+  const pendingSyncCount = pendingProp ?? pendingCount;
+
+  return (
   <IonHeader>
     <IonToolbar>
       <IonButtons slot="start">
@@ -27,6 +31,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
       </IonButtons>
     </IonToolbar>
   </IonHeader>
-);
+  );
+};
 
 export default HeaderBar;

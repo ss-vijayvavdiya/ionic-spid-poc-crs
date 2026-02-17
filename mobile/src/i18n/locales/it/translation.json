@@ -45,7 +45,8 @@
     "wallet": "Portafoglio",
     "split": "Split",
     "noProducts": "Nessun prodotto nel carrello",
-    "receiptIssued": "Scontrino"
+    "receiptIssued": "Scontrino",
+    "savedOffline": "Scontrino salvato. Verrà sincronizzato quando online."
   },
   "receipts": {
     "title": "Scontrini",
@@ -94,7 +95,8 @@
     "printer": "Stampante",
     "businessProfile": "Profilo aziendale",
     "reports": "Report",
-    "support": "Supporto"
+    "support": "Supporto",
+    "pendingSync": "{{count}} scontrino/i in attesa di sincronizzazione"
   },
   "language": {
     "title": "Lingua",

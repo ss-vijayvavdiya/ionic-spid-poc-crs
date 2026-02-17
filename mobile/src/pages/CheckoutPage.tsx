@@ -29,8 +29,12 @@ import { useHistory } from 'react-router-dom';
 import HeaderBar from '../components/HeaderBar';
 import { formatCents } from '../utils/money';
 import { useMerchant } from '../contexts/MerchantContext';
+import { useConnectivity } from '../contexts/ConnectivityContext';
+import { useSync } from '../contexts/SyncContext';
 import { fetchProducts } from '../api/products';
+import { getProducts, upsertProducts } from '../store/productsRepo';
 import { createReceipt } from '../api/receipts';
+import { addPendingReceipt } from '../store/receiptsRepo';
 import { generateUUID } from '../utils/uuid';
 import type { Product, CartItem, PaymentMethod } from '../types';
 
@@ -65,6 +69,8 @@ const CheckoutPage: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const { merchantId } = useMerchant();
+  const { isOnline } = useConnectivity();
+  const { refreshPendingCount } = useSync();
   const [search, setSearch] = useState('');
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -81,11 +87,25 @@ const CheckoutPage: React.FC = () => {
       setLoading(false);
       return;
     }
-    fetchProducts(merchantId)
-      .then((list) => setProducts(list.filter((p) => p.isActive !== false)))
-      .catch(() => setToast(t('common.error')))
-      .finally(() => setLoading(false));
-  }, [merchantId, t]);
+    const load = async () => {
+      try {
+        if (isOnline) {
+          const list = await fetchProducts(merchantId);
+          await upsertProducts(list);
+          setProducts(list.filter((p) => p.isActive !== false));
+        } else {
+          const list = await getProducts(merchantId);
+          setProducts(list.filter((p) => p.isActive !== false));
+        }
+      } catch {
+        setToast(t('common.error'));
+      } finally {
+        setLoading(false);
+      }
+    };
+    setLoading(true);
+    load();
+  }, [merchantId, isOnline, t]);
 
   const filteredProducts = products.filter(
     (p) =>
@@ -134,30 +154,50 @@ const CheckoutPage: React.FC = () => {
     if (!merchantId || cart.length === 0) return;
     setShowPaymentModal(false);
     setIssuing(true);
+    const clientReceiptId = generateUUID();
+    const items = cart.map((item) => ({
+      name: item.name,
+      qty: item.qty,
+      unitPriceCents: item.unitPriceCents,
+      vatRate: item.vatRate,
+      lineTotalCents: item.unitPriceCents * item.qty,
+    }));
+    const issuedAt = new Date().toISOString();
     try {
-      const clientReceiptId = generateUUID();
-      const items = cart.map((item) => ({
-        name: item.name,
-        qty: item.qty,
-        unitPriceCents: item.unitPriceCents,
-        vatRate: item.vatRate,
-        lineTotalCents: item.unitPriceCents * item.qty,
-      }));
-      const { id, number } = await createReceipt(merchantId, {
-        clientReceiptId,
-        issuedAt: new Date().toISOString(),
-        status: 'COMPLETED',
-        paymentMethod,
-        currency: 'EUR',
-        subtotalCents,
-        taxCents,
-        totalCents,
-        items,
-        createdOffline: false,
-      });
-      setToast(`${t('checkout.receiptIssued')} ${number}`);
-      setCart([]);
-      setTimeout(() => history.push(`/receipts/${id}`), 1000);
+      if (isOnline) {
+        const { id, number } = await createReceipt(merchantId, {
+          clientReceiptId,
+          issuedAt,
+          status: 'COMPLETED',
+          paymentMethod,
+          currency: 'EUR',
+          subtotalCents,
+          taxCents,
+          totalCents,
+          items,
+          createdOffline: false,
+        });
+        setToast(`${t('checkout.receiptIssued')} ${number}`);
+        setCart([]);
+        setTimeout(() => history.push(`/receipts/${id}`), 1000);
+      } else {
+        await addPendingReceipt({
+          clientReceiptId,
+          merchantId,
+          issuedAt,
+          status: 'COMPLETED',
+          paymentMethod,
+          currency: 'EUR',
+          subtotalCents,
+          taxCents,
+          totalCents,
+          items,
+          createdOffline: true,
+        });
+        await refreshPendingCount();
+        setToast(t('checkout.savedOffline'));
+        setCart([]);
+      }
     } catch (err) {
       setToast(err instanceof Error ? err.message : t('common.error'));
     } finally {

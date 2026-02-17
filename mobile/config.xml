@@ -13,6 +13,7 @@
   <allow-navigation href="*" />
   <allow-intent href="https://*" />
   <allow-intent href="smartsense://*" />
+  <plugin name="cordova-plugin-network-information" spec="~3.0.0" />
   <platform name="android">
     <allow-intent href="market:*" />
     <!-- Custom URL scheme: smartsense://auth/callback?code=...&state=... -->

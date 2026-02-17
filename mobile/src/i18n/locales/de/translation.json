@@ -45,7 +45,8 @@
     "wallet": "Wallet",
     "split": "Split",
     "noProducts": "Keine Produkte im Warenkorb",
-    "receiptIssued": "Beleg"
+    "receiptIssued": "Beleg",
+    "savedOffline": "Beleg gespeichert. Wird synchronisiert, wenn online."
   },
   "receipts": {
     "title": "Belege",
@@ -94,7 +95,8 @@
     "printer": "Drucker",
     "businessProfile": "Geschäftsprofil",
     "reports": "Berichte",
-    "support": "Support"
+    "support": "Support",
+    "pendingSync": "{{count}} Beleg/Belge ausstehend"
   },
   "language": {
     "title": "Sprache",
