@@ -1,0 +1,125 @@
+{
+  "menu": {
+    "checkout": "Kasse",
+    "receipts": "Belege",
+    "products": "Produkte",
+    "customers": "Kunden",
+    "payments": "Zahlungen",
+    "printer": "Drucker",
+    "reports": "Berichte",
+    "settings": "Einstellungen",
+    "support": "Support",
+    "logout": "Abmelden"
+  },
+  "common": {
+    "save": "Speichern",
+    "saved": "Gespeichert",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "add": "Hinzufügen",
+    "search": "Suchen",
+    "loading": "Laden...",
+    "error": "Fehler",
+    "offline": "Offline",
+    "pendingSync": "Ausstehende Synchronisierung ({{count}})",
+    "retry": "Wiederholen"
+  },
+  "auth": {
+    "login": "Mit SPID anmelden",
+    "logout": "Abmelden",
+    "loginPrompt": "Melden Sie sich mit Ihrer SPID-Identität an (Signicat Sandbox)."
+  },
+  "checkout": {
+    "title": "Kasse",
+    "cart": "Warenkorb",
+    "subtotal": "Zwischensumme",
+    "tax": "MwSt",
+    "total": "Gesamt",
+    "issueReceipt": "Beleg ausstellen",
+    "paymentMethod": "Zahlungsmethode",
+    "cash": "Cash",
+    "card": "Karte",
+    "wallet": "Wallet",
+    "split": "Split",
+    "noProducts": "Keine Produkte im Warenkorb"
+  },
+  "receipts": {
+    "title": "Belege",
+    "history": "Verlauf",
+    "today": "Heute",
+    "yesterday": "Gestern",
+    "other": "Andere",
+    "status": {
+      "completed": "Abgeschlossen",
+      "voided": "Storniert",
+      "refunded": "Erstattet",
+      "pendingSync": "Ausstehende Synchronisierung"
+    },
+    "filters": "Filter",
+    "detail": "Belegdetails",
+    "send": "Senden",
+    "print": "Drucken",
+    "void": "Stornieren",
+    "refund": "Erstattung",
+    "requiresInternet": "Aktion erfordert Internet"
+  },
+  "products": {
+    "title": "Produkte",
+    "addProduct": "Produkt hinzufügen",
+    "editProduct": "Produkt bearbeiten",
+    "name": "Name",
+    "price": "Preis",
+    "vatRate": "MwSt-Satz (%)",
+    "category": "Kategorie",
+    "sku": "SKU",
+    "nameRequired": "Name ist erforderlich",
+    "priceRequired": "Preis ist erforderlich",
+    "vatRequired": "MwSt-Satz ist erforderlich",
+    "empty": "Noch keine Produkte. Fügen Sie Ihr erstes Produkt hinzu.",
+    "noResults": "Keine Produkte entsprechen der Suche"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "language": "Sprache",
+    "payments": "Zahlungen",
+    "printer": "Drucker",
+    "businessProfile": "Geschäftsprofil",
+    "reports": "Berichte",
+    "support": "Support"
+  },
+  "language": {
+    "title": "Sprache",
+    "english": "English",
+    "italian": "Italiano",
+    "german": "Deutsch"
+  },
+  "payments": {
+    "title": "Zahlungsmethoden",
+    "enabledMethods": "Aktivierte Zahlungsmethoden",
+    "defaultMethod": "Standard-Zahlungsmethode"
+  },
+  "printer": {
+    "title": "Drucker",
+    "scanDevices": "Geräte scannen",
+    "connect": "Verbinden",
+    "disconnect": "Trennen",
+    "testPrint": "Testdruck",
+    "testPrintSuccess": "Testdruck gesendet"
+  },
+  "reports": {
+    "title": "Berichte",
+    "todaySales": "Heutige Verkäufe",
+    "exportCsv": "CSV exportieren",
+    "exportSuccess": "CSV exportiert"
+  },
+  "support": {
+    "title": "Support",
+    "faq": "FAQ",
+    "contactSupport": "Support kontaktieren"
+  },
+  "merchant": {
+    "select": "Händler auswählen",
+    "switch": "Händler wechseln"
+  }
+}

@@ -26,14 +26,17 @@ function requireAuth(req: Request, res: Response, next: () => void) {
 
 /**
  * GET /api/me
- * Returns the decoded JWT claims (user info) and a friendly message.
- * Used by the mobile app to display profile after login.
+ * Returns the decoded JWT claims (user info), merchants list, and a friendly message.
  */
 router.get('/me', requireAuth, (req, res) => {
   const user = (req as Request & { user?: Record<string, unknown> }).user;
+  const sub = (user?.sub as string) || '';
+  const { getMerchantsForUser } = require('../store/merchants');
+  const merchants = getMerchantsForUser(sub) as { id: string; name: string; vatNumber?: string }[];
   res.json({
     message: `Hello, ${user?.name || user?.sub || 'user'}!`,
-    user,
+    user: { ...user, merchantIds: merchants.map((m) => m.id) },
+    merchants,
   });
 });
 

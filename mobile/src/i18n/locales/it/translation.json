@@ -1,0 +1,125 @@
+{
+  "menu": {
+    "checkout": "Cassa",
+    "receipts": "Storico",
+    "products": "Prodotti",
+    "customers": "Clienti",
+    "payments": "Pagamenti",
+    "printer": "Stampante",
+    "reports": "Report",
+    "settings": "Impostazioni",
+    "support": "Supporto",
+    "logout": "Esci"
+  },
+  "common": {
+    "save": "Salva",
+    "saved": "Salvato",
+    "cancel": "Annulla",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "add": "Aggiungi",
+    "search": "Cerca",
+    "loading": "Caricamento...",
+    "error": "Errore",
+    "offline": "Offline",
+    "pendingSync": "In attesa di sincronizzazione ({{count}})",
+    "retry": "Riprova"
+  },
+  "auth": {
+    "login": "Accedi con SPID",
+    "logout": "Esci",
+    "loginPrompt": "Accedi con la tua identità SPID (sandbox Signicat)."
+  },
+  "checkout": {
+    "title": "Cassa",
+    "cart": "Carrello",
+    "subtotal": "Subtotale",
+    "tax": "IVA",
+    "total": "Totale",
+    "issueReceipt": "Emetti scontrino",
+    "paymentMethod": "Metodo di pagamento",
+    "cash": "Contanti",
+    "card": "Carta",
+    "wallet": "Portafoglio",
+    "split": "Split",
+    "noProducts": "Nessun prodotto nel carrello"
+  },
+  "receipts": {
+    "title": "Scontrini",
+    "history": "Storico",
+    "today": "Oggi",
+    "yesterday": "Ieri",
+    "other": "Altro",
+    "status": {
+      "completed": "Completato",
+      "voided": "Annullato",
+      "refunded": "Rimborsato",
+      "pendingSync": "In attesa di sincronizzazione"
+    },
+    "filters": "Filtri",
+    "detail": "Dettaglio scontrino",
+    "send": "Invia",
+    "print": "Stampa",
+    "void": "Annulla",
+    "refund": "Rimborso",
+    "requiresInternet": "L'azione richiede internet"
+  },
+  "products": {
+    "title": "Prodotti",
+    "addProduct": "Aggiungi prodotto",
+    "editProduct": "Modifica prodotto",
+    "name": "Nome",
+    "price": "Prezzo",
+    "vatRate": "Aliquota IVA (%)",
+    "category": "Categoria",
+    "sku": "SKU",
+    "nameRequired": "Il nome è obbligatorio",
+    "priceRequired": "Il prezzo è obbligatorio",
+    "vatRequired": "L'aliquota IVA è obbligatoria",
+    "empty": "Nessun prodotto ancora. Aggiungi il tuo primo prodotto per iniziare.",
+    "noResults": "Nessun prodotto corrisponde alla ricerca"
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "language": "Lingua",
+    "payments": "Pagamenti",
+    "printer": "Stampante",
+    "businessProfile": "Profilo aziendale",
+    "reports": "Report",
+    "support": "Supporto"
+  },
+  "language": {
+    "title": "Lingua",
+    "english": "English",
+    "italian": "Italiano",
+    "german": "Deutsch"
+  },
+  "payments": {
+    "title": "Metodi di pagamento",
+    "enabledMethods": "Metodi di pagamento abilitati",
+    "defaultMethod": "Metodo di pagamento predefinito"
+  },
+  "printer": {
+    "title": "Stampante",
+    "scanDevices": "Scansiona dispositivi",
+    "connect": "Connetti",
+    "disconnect": "Disconnetti",
+    "testPrint": "Stampa di test",
+    "testPrintSuccess": "Stampa di test inviata"
+  },
+  "reports": {
+    "title": "Report",
+    "todaySales": "Vendite di oggi",
+    "exportCsv": "Esporta CSV",
+    "exportSuccess": "CSV esportato"
+  },
+  "support": {
+    "title": "Supporto",
+    "faq": "FAQ",
+    "contactSupport": "Contatta il supporto"
+  },
+  "merchant": {
+    "select": "Seleziona merchant",
+    "switch": "Cambia merchant"
+  }
+}

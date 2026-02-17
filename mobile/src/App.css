@@ -1,0 +1,25 @@
+/* Product list animations */
+.product-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.product-card {
+  animation: productCardFadeIn 0.3s ease-out both;
+}
+
+.product-card:active {
+  opacity: 0.9;
+}
+
+@keyframes productCardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

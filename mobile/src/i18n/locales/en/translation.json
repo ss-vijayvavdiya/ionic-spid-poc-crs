@@ -1,0 +1,125 @@
+{
+  "menu": {
+    "checkout": "Checkout",
+    "receipts": "Receipts",
+    "products": "Products",
+    "customers": "Customers",
+    "payments": "Payments",
+    "printer": "Printer",
+    "reports": "Reports",
+    "settings": "Settings",
+    "support": "Support",
+    "logout": "Logout"
+  },
+  "common": {
+    "save": "Save",
+    "saved": "Saved",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Error",
+    "offline": "Offline",
+    "pendingSync": "Pending Sync ({{count}})",
+    "retry": "Retry"
+  },
+  "auth": {
+    "login": "Login with SPID",
+    "logout": "Logout",
+    "loginPrompt": "Sign in with your SPID identity (Signicat sandbox)."
+  },
+  "checkout": {
+    "title": "Checkout",
+    "cart": "Cart",
+    "subtotal": "Subtotal",
+    "tax": "Tax",
+    "total": "Total",
+    "issueReceipt": "Issue Receipt",
+    "paymentMethod": "Payment Method",
+    "cash": "Cash",
+    "card": "Card",
+    "wallet": "Wallet",
+    "split": "Split",
+    "noProducts": "No products in cart"
+  },
+  "receipts": {
+    "title": "Receipts",
+    "history": "History",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "other": "Other",
+    "status": {
+      "completed": "Completed",
+      "voided": "Voided",
+      "refunded": "Refunded",
+      "pendingSync": "Pending Sync"
+    },
+    "filters": "Filters",
+    "detail": "Receipt Detail",
+    "send": "Send",
+    "print": "Print",
+    "void": "Void",
+    "refund": "Refund",
+    "requiresInternet": "Action requires internet"
+  },
+  "products": {
+    "title": "Products",
+    "addProduct": "Add Product",
+    "editProduct": "Edit Product",
+    "name": "Name",
+    "price": "Price",
+    "vatRate": "VAT Rate (%)",
+    "category": "Category",
+    "sku": "SKU",
+    "nameRequired": "Name is required",
+    "priceRequired": "Price is required",
+    "vatRequired": "VAT rate is required",
+    "empty": "No products yet. Add your first product to get started.",
+    "noResults": "No products match your search"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "payments": "Payments",
+    "printer": "Printer",
+    "businessProfile": "Business Profile",
+    "reports": "Reports",
+    "support": "Support"
+  },
+  "language": {
+    "title": "Language",
+    "english": "English",
+    "italian": "Italiano",
+    "german": "Deutsch"
+  },
+  "payments": {
+    "title": "Payment Methods",
+    "enabledMethods": "Enabled payment methods",
+    "defaultMethod": "Default payment method"
+  },
+  "printer": {
+    "title": "Printer",
+    "scanDevices": "Scan devices",
+    "connect": "Connect",
+    "disconnect": "Disconnect",
+    "testPrint": "Test print",
+    "testPrintSuccess": "Test print sent"
+  },
+  "reports": {
+    "title": "Reports",
+    "todaySales": "Today's sales",
+    "exportCsv": "Export CSV",
+    "exportSuccess": "CSV exported"
+  },
+  "support": {
+    "title": "Support",
+    "faq": "FAQ",
+    "contactSupport": "Contact Support"
+  },
+  "merchant": {
+    "select": "Select Merchant",
+    "switch": "Switch merchant"
+  }
+}

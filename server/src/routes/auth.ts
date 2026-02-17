@@ -179,11 +179,13 @@ router.post('/exchange', async (req, res) => {
     const email = (claims.email as string) || '';
 
     const user = { sub, name, given_name: givenName, family_name: familyName, email };
+    // POC: add mock merchantIds. In production, load from user_merchants table.
+    const merchantIds = ['m1', 'm2'];
 
     // Mint our own JWT (15 min expiry). The app will use this for /api/me and other APIs.
     const expiresIn = 900; // seconds
     const accessToken = jwt.sign(
-      { ...user, iat: Math.floor(Date.now() / 1000) },
+      { ...user, merchantIds, iat: Math.floor(Date.now() / 1000) },
       config.APP_JWT_SECRET,
       { expiresIn }
     );

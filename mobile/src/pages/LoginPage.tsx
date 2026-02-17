@@ -7,18 +7,18 @@
  */
 import React from 'react';
 import { IonContent, IonPage, IonButton, IonHeader, IonTitle, IonToolbar } from '@ionic/react';
+import { useTranslation } from 'react-i18next';
 import { BASE_URL } from '../config';
 
 const LoginPage: React.FC = () => {
+  const { t } = useTranslation();
+
   const startLogin = () => {
     const url = `${BASE_URL}/auth/spid/start`;
-    // Use system browser (_system) so cookies and redirects work like in a real browser.
-    // cordova-plugin-inappbrowser provides cordova.InAppBrowser.open
     const cordova = (window as unknown as { cordova?: { InAppBrowser?: { open: (u: string, t: string) => void } } }).cordova;
     if (cordova?.InAppBrowser?.open) {
       cordova.InAppBrowser.open(url, '_system');
     } else {
-      // Fallback for web / dev: open in same tab
       window.open(url, '_blank');
     }
   };
@@ -32,10 +32,10 @@ const LoginPage: React.FC = () => {
       </IonHeader>
       <IonContent className="ion-padding">
         <p style={{ marginTop: '2rem', color: '#666' }}>
-          Sign in with your SPID identity (Signicat sandbox).
+          {t('auth.loginPrompt')}
         </p>
         <IonButton expand="block" onClick={startLogin} style={{ marginTop: '2rem' }}>
-          Login with SPID
+          {t('auth.login')}
         </IonButton>
       </IonContent>
     </IonPage>

@@ -19,7 +19,7 @@ import {
   IonLabel,
   IonList,
 } from '@ionic/react';
-import { getStoredToken, clearStoredToken } from '../App';
+import { useAuth } from '../contexts/AuthContext';
 import { BASE_URL } from '../config';
 
 interface UserDetails {
@@ -41,8 +41,7 @@ const HomePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showRawJson, setShowRawJson] = useState(false);
-
-  const token = getStoredToken();
+  const { token, logout } = useAuth();
 
   useEffect(() => {
     if (!token) return;
@@ -61,10 +60,6 @@ const HomePage: React.FC = () => {
       .finally(() => setLoading(false));
   }, [token]);
 
-  const logout = () => {
-    clearStoredToken();
-    window.location.href = '/login';
-  };
 
   const user = me?.user;
   const displayName = user?.name || [user?.given_name, user?.family_name].filter(Boolean).join(' ') || user?.sub || 'User';
