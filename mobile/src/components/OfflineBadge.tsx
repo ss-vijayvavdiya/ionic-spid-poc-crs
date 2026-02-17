@@ -17,7 +17,7 @@ const OfflineBadge: React.FC<OfflineBadgeProps> = ({ isOffline, pendingCount = 0
 
   if (isOffline) {
     return (
-      <IonBadge color="warning" style={{ marginRight: 8 }}>
+      <IonBadge color="warning" className="offline-badge-pulse" style={{ marginRight: 8 }}>
         {t('common.offline')}
       </IonBadge>
     );

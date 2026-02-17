@@ -12,7 +12,7 @@ import {
   IonAlert,
 } from '@ionic/react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import HeaderBar from '../components/HeaderBar';
 import { formatCents } from '../utils/money';
 import { useMerchant } from '../contexts/MerchantContext';
@@ -22,6 +22,8 @@ import type { Receipt } from '../types';
 const ReceiptDetailPage: React.FC = () => {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
+  const location = useLocation<{ fromCheckout?: boolean }>();
+  const fromCheckout = location.state?.fromCheckout ?? false;
   const { merchantId } = useMerchant();
   const [receipt, setReceipt] = useState<Receipt | null>(null);
   const [loading, setLoading] = useState(true);
@@ -117,7 +119,7 @@ const ReceiptDetailPage: React.FC = () => {
   return (
     <IonPage>
       <HeaderBar title={t('receipts.detail')} />
-      <IonContent className="ion-padding">
+      <IonContent className={`ion-padding ${fromCheckout ? 'receipt-success-flash' : ''}`}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
           <p style={{ margin: 0 }}><strong>{receipt.number ?? id}</strong></p>
           <IonBadge color={statusColor}>{t(`receipts.status.${(receipt.status || 'COMPLETED').toLowerCase()}`)}</IonBadge>

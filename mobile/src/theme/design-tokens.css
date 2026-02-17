@@ -1,0 +1,50 @@
+/**
+ * Design System — Spacing, Typography, Color tokens
+ * Phase 3: Consistent padding/margins, hierarchy, tokens
+ */
+
+:root {
+  /* Spacing scale (4, 8, 12, 16, 24, 32px) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  /* Typography hierarchy */
+  --font-title: 1.25rem;
+  --font-subtitle: 1rem;
+  --font-body: 0.9375rem;
+  --font-caption: 0.8125rem;
+  --font-weight-title: 600;
+  --font-weight-body: 400;
+  --font-weight-caption: 400;
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+
+  /* Color tokens (map to Ionic vars) */
+  --color-primary: var(--ion-color-primary);
+  --color-success: var(--ion-color-success);
+  --color-warning: var(--ion-color-warning);
+  --color-danger: var(--ion-color-danger);
+  --color-medium: var(--ion-color-medium);
+  --color-light: var(--ion-color-light);
+}
+
+/* Utility classes */
+.text-title { font-size: var(--font-title); font-weight: var(--font-weight-title); line-height: var(--line-height-tight); }
+.text-subtitle { font-size: var(--font-subtitle); font-weight: var(--font-weight-body); }
+.text-body { font-size: var(--font-body); line-height: var(--line-height-normal); }
+.text-caption { font-size: var(--font-caption); color: var(--color-medium); }
+
+.p-1 { padding: var(--space-1); }
+.p-2 { padding: var(--space-2); }
+.p-3 { padding: var(--space-3); }
+.p-4 { padding: var(--space-4); }
+.p-5 { padding: var(--space-5); }
+.mb-2 { margin-bottom: var(--space-2); }
+.mb-3 { margin-bottom: var(--space-3); }
+.mb-4 { margin-bottom: var(--space-4); }
+.gap-2 { gap: var(--space-2); }
+.gap-3 { gap: var(--space-3); }

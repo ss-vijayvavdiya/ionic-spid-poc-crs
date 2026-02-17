@@ -20,6 +20,7 @@ import { add } from 'ionicons/icons';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import HeaderBar from '../components/HeaderBar';
+import EmptyState from '../components/EmptyState';
 import { formatCents } from '../utils/money';
 import { useMerchant } from '../contexts/MerchantContext';
 import { useConnectivity } from '../contexts/ConnectivityContext';
@@ -127,16 +128,11 @@ const ProductsPage: React.FC = () => {
             </IonCardContent>
           </IonCard>
         ) : filtered.length === 0 ? (
-          <IonCard>
-            <IonCardContent className="ion-text-center ion-padding">
-              <p>{products.length === 0 ? t('products.empty') : t('products.noResults')}</p>
-              {products.length === 0 && (
-                <IonFabButton size="small" onClick={() => history.push('/products/new')}>
-                  <IonIcon icon={add} />
-                </IonFabButton>
-              )}
-            </IonCardContent>
-          </IonCard>
+          <EmptyState
+            message={products.length === 0 ? t('products.empty') : t('products.noResults')}
+            ctaLabel={products.length === 0 ? t('products.addProduct') : undefined}
+            onCta={products.length === 0 ? () => history.push('/products/new') : undefined}
+          />
         ) : (
           <div className="product-list">
             {filtered.map((p, i) => (

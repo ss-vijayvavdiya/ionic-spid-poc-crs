@@ -1,23 +1,25 @@
-/* Product list animations */
+/* Phase 3: Design system + animations */
+
+/* List layouts */
 .product-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-3, 12px);
 }
 
-.product-card {
-  animation: productCardFadeIn 0.3s ease-out both;
-}
-
-.product-card:active {
-  opacity: 0.9;
-}
-
+/* List item fade-in + slide-up */
+.product-card,
 .receipt-card {
-  animation: productCardFadeIn 0.3s ease-out both;
+  animation: listItemFadeIn 0.3s ease-out both;
 }
 
-@keyframes productCardFadeIn {
+.product-card:active,
+.receipt-card:active {
+  opacity: 0.9;
+  transition: opacity 0.15s;
+}
+
+@keyframes listItemFadeIn {
   from {
     opacity: 0;
     transform: translateY(8px);
@@ -26,4 +28,41 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Cart add pulse */
+.cart-add-pulse {
+  animation: cartAddPulse 0.4s ease-out;
+}
+
+@keyframes cartAddPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Receipt success checkmark flash */
+.receipt-success-flash {
+  animation: receiptSuccessFlash 0.6s ease-out;
+}
+
+@keyframes receiptSuccessFlash {
+  0% { background: transparent; }
+  30% { background: rgba(var(--ion-color-success-rgb), 0.2); }
+  100% { background: transparent; }
+}
+
+/* Offline badge pulse */
+.offline-badge-pulse {
+  animation: offlinePulse 2s ease-in-out infinite;
+}
+
+@keyframes offlinePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Empty state */
+.empty-state {
+  margin: var(--space-4, 16px) 0;
 }

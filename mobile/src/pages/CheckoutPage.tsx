@@ -79,6 +79,7 @@ const CheckoutPage: React.FC = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [issuing, setIssuing] = useState(false);
   const [toast, setToast] = useState('');
+  const [pulseProductId, setPulseProductId] = useState<string | null>(null);
 
   const debouncedSearch = useDebounce(search, 300);
 
@@ -115,6 +116,8 @@ const CheckoutPage: React.FC = () => {
   );
 
   const addToCart = useCallback((p: Product) => {
+    setPulseProductId(p.id);
+    setTimeout(() => setPulseProductId(null), 400);
     setCart((prev) => {
       const existing = prev.find((i) => i.productId === p.id);
       if (existing) {
@@ -179,7 +182,7 @@ const CheckoutPage: React.FC = () => {
         });
         setToast(`${t('checkout.receiptIssued')} ${number}`);
         setCart([]);
-        setTimeout(() => history.push(`/receipts/${id}`), 1000);
+        setTimeout(() => history.push(`/receipts/${id}`, { fromCheckout: true }), 1000);
       } else {
         await addPendingReceipt({
           clientReceiptId,
@@ -237,7 +240,11 @@ const CheckoutPage: React.FC = () => {
             <IonRow>
               {filteredProducts.map((p) => (
                 <IonCol size="6" sizeMd="4" key={p.id}>
-                  <IonCard button onClick={() => addToCart(p)}>
+                  <IonCard
+                    button
+                    onClick={() => addToCart(p)}
+                    className={pulseProductId === p.id ? 'cart-add-pulse' : ''}
+                  >
                     <IonCardContent className="ion-text-center">
                       <p style={{ fontWeight: 600, margin: 0 }}>{p.name}</p>
                       <p style={{ margin: '0.25rem 0 0', color: 'var(--ion-color-medium)' }}>
@@ -266,7 +273,12 @@ const CheckoutPage: React.FC = () => {
         >
           <h3 style={{ margin: '0 0 0.5rem' }}>{t('checkout.cart')}</h3>
           {cart.length === 0 ? (
-            <p style={{ color: 'var(--ion-color-medium)', margin: 0 }}>{t('checkout.noProducts')}</p>
+            <p style={{ color: 'var(--ion-color-medium)', margin: 0 }}>
+              {t('checkout.noProducts')}
+              <IonButton fill="clear" size="small" onClick={() => history.push('/products')}>
+                {t('products.addProduct')}
+              </IonButton>
+            </p>
           ) : (
             <IonList>
               {cart.map((item) => (

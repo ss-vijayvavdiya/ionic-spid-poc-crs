@@ -21,6 +21,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import HeaderBar from '../components/HeaderBar';
+import EmptyState from '../components/EmptyState';
 import { formatCents } from '../utils/money';
 import { useMerchant } from '../contexts/MerchantContext';
 import { fetchReceipts } from '../api/receipts';
@@ -165,11 +166,11 @@ const ReceiptsPage: React.FC = () => {
             <p>{t('common.loading')}</p>
           </div>
         ) : receipts.length === 0 ? (
-          <IonCard>
-            <IonCardContent className="ion-text-center ion-padding">
-              <p>{t('receipts.empty')}</p>
-            </IonCardContent>
-          </IonCard>
+          <EmptyState
+            message={t('receipts.empty')}
+            ctaLabel={t('menu.checkout')}
+            onCta={() => history.push('/checkout')}
+          />
         ) : (
           groupLabels.map(({ key, label }) => {
             const items = grouped[key];
