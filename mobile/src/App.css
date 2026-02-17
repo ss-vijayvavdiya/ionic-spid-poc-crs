@@ -13,6 +13,10 @@
   opacity: 0.9;
 }
 
+.receipt-card {
+  animation: productCardFadeIn 0.3s ease-out both;
+}
+
 @keyframes productCardFadeIn {
   from {
     opacity: 0;

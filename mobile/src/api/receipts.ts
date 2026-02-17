@@ -52,3 +52,11 @@ export async function fetchReceipts(
 export async function getReceipt(id: string, merchantId: string): Promise<Receipt> {
   return apiFetch<Receipt>(`/receipts/${id}`, { merchantId });
 }
+
+export async function voidReceipt(id: string, merchantId: string): Promise<Receipt> {
+  return apiFetch<Receipt>(`/receipts/${id}/void`, { method: 'PUT', merchantId });
+}
+
+export async function refundReceipt(id: string, merchantId: string): Promise<Receipt> {
+  return apiFetch<Receipt>(`/receipts/${id}/refund`, { method: 'PUT', merchantId });
+}

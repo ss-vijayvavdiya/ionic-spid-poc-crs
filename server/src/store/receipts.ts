@@ -69,6 +69,17 @@ export function getReceipt(id: string, merchantId: string): Receipt | undefined 
   return r && r.merchantId === merchantId ? r : undefined;
 }
 
+export function updateReceiptStatus(
+  id: string,
+  merchantId: string,
+  status: 'VOIDED' | 'REFUNDED'
+): Receipt | undefined {
+  const r = receipts.get(id);
+  if (!r || r.merchantId !== merchantId) return undefined;
+  r.status = status;
+  return r;
+}
+
 export function listReceipts(
   merchantId: string,
   filters?: { from?: string; to?: string; status?: string; payment?: string }

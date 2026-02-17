@@ -52,6 +52,8 @@
     "history": "Storico",
     "today": "Oggi",
     "yesterday": "Ieri",
+    "thisWeek": "Questa settimana",
+    "older": "Precedenti",
     "other": "Altro",
     "status": {
       "completed": "Completato",
@@ -65,7 +67,10 @@
     "print": "Stampa",
     "void": "Annulla",
     "refund": "Rimborso",
-    "requiresInternet": "L'azione richiede internet"
+    "confirmVoid": "Sei sicuro di voler annullare questo scontrino?",
+    "confirmRefund": "Sei sicuro di voler rimborsare questo scontrino?",
+    "requiresInternet": "L'azione richiede internet",
+    "empty": "Nessuno scontrino"
   },
   "products": {
     "title": "Prodotti",

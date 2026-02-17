@@ -69,6 +69,24 @@ router.get('/:id', requireAuth, (req: AuthRequest, res) => {
   res.json(receipt);
 });
 
+router.put('/:id/void', requireAuth, (req: AuthRequest, res) => {
+  const merchantId = req.headers['x-merchant-id'] as string || req.user?.merchantIds?.[0];
+  if (!merchantId) return res.status(400).json({ error: 'merchantId required' });
+  if (!req.user?.merchantIds?.includes(merchantId)) return res.status(403).json({ error: 'Access denied' });
+  const receipt = receiptsStore.updateReceiptStatus(req.params.id, merchantId, 'VOIDED');
+  if (!receipt) return res.status(404).json({ error: 'Receipt not found' });
+  res.json(receipt);
+});
+
+router.put('/:id/refund', requireAuth, (req: AuthRequest, res) => {
+  const merchantId = req.headers['x-merchant-id'] as string || req.user?.merchantIds?.[0];
+  if (!merchantId) return res.status(400).json({ error: 'merchantId required' });
+  if (!req.user?.merchantIds?.includes(merchantId)) return res.status(403).json({ error: 'Access denied' });
+  const receipt = receiptsStore.updateReceiptStatus(req.params.id, merchantId, 'REFUNDED');
+  if (!receipt) return res.status(404).json({ error: 'Receipt not found' });
+  res.json(receipt);
+});
+
 router.post('/', requireAuth, (req: AuthRequest, res) => {
   const parsed = createReceiptSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: parsed.error.message });

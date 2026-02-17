@@ -52,6 +52,8 @@
     "history": "History",
     "today": "Today",
     "yesterday": "Yesterday",
+    "thisWeek": "This week",
+    "older": "Older",
     "other": "Other",
     "status": {
       "completed": "Completed",
@@ -65,7 +67,10 @@
     "print": "Print",
     "void": "Void",
     "refund": "Refund",
-    "requiresInternet": "Action requires internet"
+    "confirmVoid": "Are you sure you want to void this receipt?",
+    "confirmRefund": "Are you sure you want to refund this receipt?",
+    "requiresInternet": "Action requires internet",
+    "empty": "No receipts yet"
   },
   "products": {
     "title": "Products",

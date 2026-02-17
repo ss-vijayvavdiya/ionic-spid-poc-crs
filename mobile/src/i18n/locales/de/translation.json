@@ -52,6 +52,8 @@
     "history": "Verlauf",
     "today": "Heute",
     "yesterday": "Gestern",
+    "thisWeek": "Diese Woche",
+    "older": "Ältere",
     "other": "Andere",
     "status": {
       "completed": "Abgeschlossen",
@@ -65,7 +67,10 @@
     "print": "Drucken",
     "void": "Stornieren",
     "refund": "Erstattung",
-    "requiresInternet": "Aktion erfordert Internet"
+    "confirmVoid": "Möchten Sie diesen Beleg wirklich stornieren?",
+    "confirmRefund": "Möchten Sie diesen Beleg wirklich erstatten?",
+    "requiresInternet": "Aktion erfordert Internet",
+    "empty": "Keine Belege"
   },
   "products": {
     "title": "Produkte",
