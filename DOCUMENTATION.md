@@ -121,8 +121,9 @@ flowchart LR
 ### 3.3 Authentication architecture (OIDC + our JWT)
 
 ```mermaid
-flowchart TB
+flowchart LR
     subgraph App["Mobile App"]
+        direction TB
         A1[Login screen]
         A2[Receive callback URL]
         A3["Call /auth/exchange"]
@@ -130,6 +131,7 @@ flowchart TB
         A5["Call /api/me"]
     end
     subgraph Backend["Our Backend"]
+        direction TB
         B1["/auth/spid/start"]
         B2["/auth/callback"]
         B3["/auth/exchange"]
@@ -137,9 +139,11 @@ flowchart TB
         B5["/api/me"]
     end
     subgraph Signicat["Signicat"]
+        direction TB
         S1[Authorize]
         S2[Token endpoint]
     end
+    A1 ~~~ B1 ~~~ S1
     A1 -->|"Open in browser"| B1
     B1 -->|"Redirect"| S1
     S1 -->|"Redirect with code"| B2
@@ -186,43 +190,36 @@ sequenceDiagram
     participant U as User
     participant A as Mobile App
     participant B as Our Backend
-    participant N as ngrok
     participant S as Signicat
     participant SPID as SPID IdP
 
     U->>A: Tap "Login with SPID"
     A->>A: Open system browser
-    A->>N: GET /auth/spid/start
-    N->>B: GET /auth/spid/start
+    U->>B: GET /auth/spid/start
     B->>B: Create state, nonce, code_verifier, code_challenge
     B->>B: Save session (state, nonce, code_verifier)
-    B->>N: 302 Redirect to Signicat
-    N->>S: GET authorize?client_id&redirect_uri&code_challenge&state&nonce...
+    B->>U: 302 Redirect to Signicat
+    U->>S: GET authorize?client_id&redirect_uri&code_challenge&state&nonce...
     S->>U: Show IdP selection (e.g. SPID demo)
     U->>S: Choose SPID demo
     S->>SPID: Authenticate
     SPID->>S: Identity
-    S->>N: 302 Redirect to /auth/callback?code=...&state=...
-    N->>B: GET /auth/callback?code&state
-    B->>N: 200 HTML (Login received + Open app link)
-    N->>U: Show "Login received" page
+    S->>U: 302 Redirect to /auth/callback?code=...&state=...
+    U->>B: GET /auth/callback?code&state
+    B->>U: 200 HTML (Login received + Open app link)
     U->>U: Tap "Open app (finish login)" (smartsense://...)
     A->>A: handleOpenURL(smartsense://auth/callback?code&state)
-    A->>N: POST /auth/exchange { code, state }
-    N->>B: POST /auth/exchange
+    A->>B: POST /auth/exchange { code, state }
     B->>B: Load session by state, validate
     B->>S: POST token (code, code_verifier, redirect_uri)
     S->>B: access_token, id_token
-    B->>B: Validate ID token, nonce; build user claims
+    B->>B: Validate ID token, nonce. Build user claims
     B->>B: Sign our JWT (15 min)
-    B->>N: 200 { access_token, user }
-    N->>A: 200 { access_token, user }
+    B->>A: 200 { access_token, user }
     A->>A: Store JWT, navigate to Home
-    A->>N: GET /api/me Authorization: Bearer <JWT>
-    N->>B: GET /api/me
+    A->>B: GET /api/me with Bearer JWT
     B->>B: Verify JWT
-    B->>N: 200 { message, user }
-    N->>A: 200
+    B->>A: 200 { message, user }
     A->>U: Show profile (Home)
 ```
 
@@ -235,7 +232,7 @@ stateDiagram-v2
     SessionCreated --> RedirectToSignicat: Redirect to Signicat
     RedirectToSignicat --> Callback: User logs in at Signicat
     Callback --> CallbackPage: Serve HTML (no redirect loop)
-    CallbackPage --> AppOpens: User taps smartsense:// link
+    CallbackPage --> AppOpens: User taps Open app link
     AppOpens --> Exchange: App POST /auth/exchange
     Exchange --> ValidateSession: Load session by state
     ValidateSession --> TokenRequest: Session valid
