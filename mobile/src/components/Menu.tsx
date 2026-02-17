@@ -1,5 +1,5 @@
 /**
- * Side menu with i18n labels.
+ * Side menu with i18n labels and user profile section.
  */
 import React from 'react';
 import {
@@ -21,14 +21,16 @@ import {
   settingsOutline,
   helpCircleOutline,
   logOutOutline,
+  personCircleOutline,
 } from 'ionicons/icons';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
+import { useUser } from '../contexts/UserContext';
 
 const Menu: React.FC = () => {
   const { t } = useTranslation();
-  const history = useHistory();
   const { logout } = useAuth();
+  const { displayName } = useUser();
 
   const handleLogout = () => {
     logout();
@@ -60,6 +62,12 @@ const Menu: React.FC = () => {
         ))}
       </IonList>
       <IonList>
+        <IonMenuToggle>
+          <IonItem button routerLink="/profile" routerDirection="none">
+            <IonIcon slot="start" icon={personCircleOutline} />
+            <IonLabel>{displayName || t('menu.guest')}</IonLabel>
+          </IonItem>
+        </IonMenuToggle>
         <IonItem button onClick={handleLogout}>
           <IonIcon slot="start" icon={logOutOutline} />
           <IonLabel>{t('menu.logout')}</IonLabel>

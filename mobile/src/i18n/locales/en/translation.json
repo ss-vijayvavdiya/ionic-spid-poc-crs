@@ -1,5 +1,7 @@
 {
   "menu": {
+    "profile": "Profile",
+    "guest": "Guest",
     "checkout": "Checkout",
     "receipts": "Receipts",
     "products": "Products",

@@ -6,7 +6,6 @@ import React from 'react';
 import {
   IonMenu,
   IonRouterOutlet,
-  IonSplitPane,
   IonContent,
 } from '@ionic/react';
 import { Route, Redirect } from 'react-router-dom';
@@ -28,6 +27,7 @@ import ReportsPage from '../pages/ReportsPage';
 import SupportPage from '../pages/SupportPage';
 import CustomersPage from '../pages/CustomersPage';
 import HomePage from '../pages/HomePage';
+import ProfilePage from '../pages/ProfilePage';
 
 import { getStoredToken } from '../auth/storage';
 
@@ -35,7 +35,7 @@ const AppShell: React.FC = () => {
   const token = getStoredToken();
 
   return (
-    <IonSplitPane contentId="main-content" when="md">
+    <>
           <IonMenu contentId="main-content" type="overlay" menuId="main-menu" disabled={!token}>
             <IonContent>
               <Menu />
@@ -60,6 +60,7 @@ const AppShell: React.FC = () => {
             <Route exact path="/reports" component={ReportsPage} />
             <Route exact path="/support" component={SupportPage} />
             <Route exact path="/home" component={HomePage} />
+            <Route exact path="/profile" component={ProfilePage} />
 
             <Route exact path="/">
               {token ? <Redirect to="/checkout" /> : <Redirect to="/login" />}
@@ -72,7 +73,7 @@ const AppShell: React.FC = () => {
               <Redirect to="/" />
             </Route>
           </IonRouterOutlet>
-        </IonSplitPane>
+    </>
   );
 };
 

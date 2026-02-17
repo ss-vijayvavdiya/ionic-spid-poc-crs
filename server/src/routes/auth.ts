@@ -10,6 +10,23 @@ import crypto from 'crypto';
 
 const router = Router();
 
+/**
+ * POST /auth/dev-token
+ * Dev-only: returns a JWT for local testing when SEED_SAMPLE_DATA=true.
+ * Use "Dev login" on LoginPage to skip SPID.
+ */
+router.post('/dev-token', (req, res) => {
+  if (process.env.SEED_SAMPLE_DATA !== 'true') {
+    return res.status(404).json({ error: 'Not available' });
+  }
+  const accessToken = jwt.sign(
+    { sub: 'dev-user', merchantIds: ['m1', 'm2'], iat: Math.floor(Date.now() / 1000) },
+    config.APP_JWT_SECRET,
+    { expiresIn: '24h' }
+  );
+  res.json({ access_token: accessToken, token_type: 'Bearer' });
+});
+
 // Lazy-initialized OIDC client (discovery uses SIGNICAT_ISSUER)
 let clientPromise: Promise<Client> | null = null;
 async function getClient(): Promise<Client> {

@@ -1,10 +1,11 @@
 /**
- * Fetches /api/me when authenticated and populates MerchantContext.
+ * Fetches /api/me when authenticated and populates MerchantContext and UserContext.
  * Uses mock merchants if API doesn't return them yet.
  */
 import React, { useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useMerchant } from '../contexts/MerchantContext';
+import { useUser } from '../contexts/UserContext';
 import { BASE_URL } from '../config';
 import type { Merchant } from '../types';
 
@@ -16,19 +17,28 @@ const MOCK_MERCHANTS: Merchant[] = [
 export function MerchantLoader({ children }: { children: React.ReactNode }) {
   const { token } = useAuth();
   const { setMerchants } = useMerchant();
+  const { setUser } = useUser();
 
   useEffect(() => {
-    if (!token) return;
+    if (!token) {
+      setUser(null);
+      return;
+    }
     fetch(`${BASE_URL}/api/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((res) => res.ok ? res.json() : null)
+      .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         const merchants = (data?.merchants as Merchant[] | undefined) ?? MOCK_MERCHANTS;
         setMerchants(merchants);
+        const u = data?.user as { sub?: string; name?: string; email?: string; given_name?: string; family_name?: string } | undefined;
+        setUser(u ? { sub: u.sub, name: u.name, email: u.email, given_name: u.given_name, family_name: u.family_name } : null);
       })
-      .catch(() => setMerchants(MOCK_MERCHANTS));
-  }, [token, setMerchants]);
+      .catch(() => {
+        setMerchants(MOCK_MERCHANTS);
+        setUser(null);
+      });
+  }, [token, setMerchants, setUser]);
 
   return <>{children}</>;
 }

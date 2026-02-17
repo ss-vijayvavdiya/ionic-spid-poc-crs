@@ -1,5 +1,7 @@
 {
   "menu": {
+    "profile": "Profilo",
+    "guest": "Ospite",
     "checkout": "Cassa",
     "receipts": "Storico",
     "products": "Prodotti",
