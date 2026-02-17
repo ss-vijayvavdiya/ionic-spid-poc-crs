@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!--
+  Cordova config for SPID POC.
+  - Custom URL scheme smartsense:// so the app can open from the callback page fallback link.
+  - For production with a fixed domain, add an intent-filter for https with that host.
+-->
+<widget id="com.smartsense.spidpoc" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+  <name>SPID POC</name>
+  <description>SPID SSO POC with Signicat</description>
+  <author email="dev@example.com" href="https://example.com">SPID POC</author>
+  <content src="index.html" />
+  <access origin="*" />
+  <allow-navigation href="*" />
+  <allow-intent href="https://*" />
+  <allow-intent href="smartsense://*" />
+  <platform name="android">
+    <allow-intent href="market:*" />
+    <!-- Custom URL scheme: smartsense://auth/callback?code=...&state=... -->
+    <intent-filter>
+      <action android:name="android.intent.action.VIEW" />
+      <category android:name="android.intent.category.DEFAULT" />
+      <category android:name="android.intent.category.BROWSABLE" />
+      <data android:scheme="smartsense" android:host="auth" android:pathPrefix="/callback" />
+    </intent-filter>
+    <!-- Optional: HTTPS App Links. Host can be updated by script for current ngrok domain. -->
+    <intent-filter android:autoVerify="true">
+      <action android:name="android.intent.action.VIEW" />
+      <category android:name="android.intent.category.DEFAULT" />
+      <category android:name="android.intent.category.BROWSABLE" />
+      <data android:scheme="https" android:host="8343-14-195-76-134.ngrok-free.app" android:pathPrefix="/auth/callback" />
+    </intent-filter>
+  </platform>
+</widget>

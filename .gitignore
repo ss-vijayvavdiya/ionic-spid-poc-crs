@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+server/node_modules/
+mobile/node_modules/
+
+# Build outputs
+server/dist/
+mobile/www/
+
+# Cordova (platforms are regenerated; plugins often committed)
+mobile/platforms/
+
+# Secrets — never commit
+server/.env
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+
+# Optional: Cursor
+.cursor/

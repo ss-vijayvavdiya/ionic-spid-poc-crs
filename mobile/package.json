@@ -1,0 +1,48 @@
+{
+  "name": "spid-poc-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ionic React + Cordova Android app for SPID SSO POC",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite"
+  },
+  "dependencies": {
+    "@ionic/react": "^7.0.0",
+    "@ionic/react-router": "^7.0.0",
+    "ionicons": "^7.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^5.3.4"
+  },
+  "devDependencies": {
+    "@ionic/cli": "^7.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@types/react-router-dom": "^5.3.3",
+    "@vitejs/plugin-react": "^4.2.0",
+    "cordova-android": "^14.0.1",
+    "cordova-plugin-customurlscheme": "^5.0.2",
+    "cordova-plugin-inappbrowser": "^6.0.0",
+    "react-scripts": "^5.0.1",
+    "typescript": "^5.3.0",
+    "vite": "^5.0.0"
+  },
+  "capacitor": {
+    "disabled": true
+  },
+  "cordova": {
+    "platforms": [
+      "android"
+    ],
+    "plugins": {
+      "cordova-plugin-inappbrowser": {},
+      "cordova-plugin-customurlscheme": {
+        "URL_SCHEME": "smartsense",
+        "ANDROID_SCHEME": " ",
+        "ANDROID_HOST": " ",
+        "ANDROID_PATHPREFIX": "/"
+      }
+    }
+  }
+}

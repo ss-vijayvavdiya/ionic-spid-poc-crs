@@ -1,0 +1,13 @@
+{
+  "name": "ionic-spid-poc",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SPID SSO POC — Ionic React + Cordova Android + Node.js backend + Signicat",
+  "scripts": {
+    "install:all": "npm install && cd server && npm install && cd ../mobile && npm install",
+    "server": "cd server && npm run dev",
+    "mobile:build": "cd mobile && npm run build",
+    "mobile:android": "cd mobile && npm run build && npx cordova run android",
+    "ngrok:update": "node scripts/start-ngrok-and-update.js"
+  }
+}
