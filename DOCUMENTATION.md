@@ -121,7 +121,7 @@ flowchart LR
 ### 3.3 Authentication architecture (OIDC + our JWT)
 
 ```mermaid
-flowchart LR
+flowchart TB
     subgraph App["Mobile App"]
         direction TB
         A1[Login screen]
