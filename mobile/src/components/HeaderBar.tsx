@@ -11,9 +11,10 @@ interface HeaderBarProps {
   title: string;
   isOffline?: boolean;
   pendingSyncCount?: number;
+  actions?: React.ReactNode;
 }
 
-const HeaderBar: React.FC<HeaderBarProps> = ({ title, isOffline: isOfflineProp, pendingSyncCount: pendingProp }) => {
+const HeaderBar: React.FC<HeaderBarProps> = ({ title, isOffline: isOfflineProp, pendingSyncCount: pendingProp, actions }) => {
   const { isOnline } = useConnectivity();
   const { pendingCount } = useSync();
   const isOffline = isOfflineProp ?? !isOnline;
@@ -27,6 +28,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ title, isOffline: isOfflineProp, 
       </IonButtons>
       <IonTitle>{title}</IonTitle>
       <IonButtons slot="end">
+        {actions}
         <OfflineBadge isOffline={isOffline} pendingCount={pendingSyncCount} />
       </IonButtons>
     </IonToolbar>

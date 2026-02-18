@@ -71,7 +71,8 @@
     "confirmVoid": "Möchten Sie diesen Beleg wirklich stornieren?",
     "confirmRefund": "Möchten Sie diesen Beleg wirklich erstatten?",
     "requiresInternet": "Aktion erfordert Internet",
-    "empty": "Keine Belege"
+    "empty": "Keine Belege",
+    "syncFailed": "Synchronisierung fehlgeschlagen"
   },
   "products": {
     "title": "Produkte",
@@ -86,7 +87,9 @@
     "priceRequired": "Preis ist erforderlich",
     "vatRequired": "MwSt-Satz ist erforderlich",
     "empty": "Noch keine Produkte. Fügen Sie Ihr erstes Produkt hinzu.",
-    "noResults": "Keine Produkte entsprechen der Suche"
+    "noResults": "Keine Produkte entsprechen der Suche",
+    "loadSampleData": "Beispieldaten laden",
+    "sampleDataLoaded": "Beispieldaten geladen"
   },
   "settings": {
     "title": "Einstellungen",
@@ -121,7 +124,20 @@
     "title": "Berichte",
     "todaySales": "Heutige Verkäufe",
     "exportCsv": "CSV exportieren",
+    "exportDate": "Exportdatum",
     "exportSuccess": "CSV exportiert"
+  },
+  "customers": {
+    "title": "Kunden",
+    "addCustomer": "Kunde hinzufügen",
+    "editCustomer": "Kunde bearbeiten",
+    "name": "Name",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "nameRequired": "Name ist erforderlich",
+    "emailInvalid": "Ungültige E-Mail",
+    "confirmDelete": "{{name}} löschen?",
+    "empty": "Noch keine Kunden"
   },
   "support": {
     "title": "Support",

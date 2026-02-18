@@ -1,7 +1,31 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { addIcons } from 'ionicons';
+import {
+  cafeOutline,
+  nutritionOutline,
+  restaurantOutline,
+  iceCreamOutline,
+  pizzaOutline,
+  eggOutline,
+  cubeOutline,
+  receiptOutline,
+  refreshOutline,
+} from 'ionicons/icons';
 import { IonApp, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
+
+addIcons({
+  cafeOutline,
+  nutritionOutline,
+  restaurantOutline,
+  iceCreamOutline,
+  pizzaOutline,
+  eggOutline,
+  cubeOutline,
+  receiptOutline,
+  refreshOutline,
+});
 import '@ionic/react/css/core.css';
 import './theme/design-tokens.css';
 import '@ionic/react/css/normalize.css';
@@ -14,15 +38,18 @@ import '@ionic/react/css/text-transformation.css';
 import '@ionic/react/css/flex-utils.css';
 import '@ionic/react/css/display.css';
 import App from './App';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 setupIonicReact();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <IonApp>
-      <IonReactRouter>
-        <App />
-      </IonReactRouter>
-    </IonApp>
+    <ErrorBoundary>
+      <IonApp>
+        <IonReactRouter>
+          <App />
+        </IonReactRouter>
+      </IonApp>
+    </ErrorBoundary>
   </React.StrictMode>
 );

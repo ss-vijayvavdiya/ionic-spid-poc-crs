@@ -6,10 +6,11 @@
  * code/state for our JWT (handled in App.tsx).
  */
 import React from 'react';
-import { IonContent, IonPage, IonButton, IonHeader, IonTitle, IonToolbar } from '@ionic/react';
+import { IonContent, IonPage, IonButton, IonHeader, IonTitle, IonToolbar, IonIcon } from '@ionic/react';
+import { receiptOutline } from 'ionicons/icons';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import { BASE_URL } from '../config';
+import { BASE_URL, validateConfig } from '../config';
 import { useAuth } from '../contexts/AuthContext';
 
 const LoginPage: React.FC = () => {
@@ -29,6 +30,11 @@ const LoginPage: React.FC = () => {
   };
 
   const startLogin = () => {
+    const configError = validateConfig();
+    if (configError) {
+      alert(configError);
+      return;
+    }
     const url = `${BASE_URL}/auth/spid/start`;
     const cordova = (window as unknown as { cordova?: { InAppBrowser?: { open: (u: string, t: string) => void } } }).cordova;
     if (cordova?.InAppBrowser?.open) {
@@ -46,7 +52,24 @@ const LoginPage: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
-        <p style={{ marginTop: '2rem', color: '#666' }}>
+        <div className="ion-text-center" style={{ marginTop: '3rem', marginBottom: '2rem' }}>
+          <div
+            style={{
+              width: 96,
+              height: 96,
+              borderRadius: 24,
+              background: 'var(--ion-color-primary)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <IonIcon icon={receiptOutline} style={{ fontSize: 48, color: 'white' }} />
+          </div>
+          <h2 style={{ marginTop: '1rem', fontWeight: 600 }}>POS Receipt</h2>
+          <p style={{ color: 'var(--ion-color-medium)', margin: 0 }}>Sign in to continue</p>
+        </div>
+        <p style={{ marginTop: '1rem', color: '#666' }}>
           {t('auth.loginPrompt')}
         </p>
         <IonButton expand="block" onClick={startLogin} style={{ marginTop: '2rem' }}>

@@ -5,6 +5,7 @@
 import * as merchantsStore from './store/merchants';
 import * as productsStore from './store/products';
 import * as receiptsStore from './store/receipts';
+import * as customersStore from './store/customers';
 import crypto from 'crypto';
 
 function uuid(): string {
@@ -47,6 +48,11 @@ export function runSeed(): void {
   ];
   restaurantProducts.forEach((p) => productsStore.seedProduct('m2', p));
   console.log('[seed] Products: coffee shop (7), restaurant (8)');
+
+  customersStore.seedCustomer('m1', { name: 'Marco Rossi', email: 'marco@example.com', phone: '+39 333 1234567' });
+  customersStore.seedCustomer('m1', { name: 'Anna Bianchi', phone: '+39 320 9876543' });
+  customersStore.seedCustomer('m2', { name: 'Giulia Verdi', email: 'giulia@example.com', phone: '+39 347 5551234' });
+  console.log('[seed] Customers: 2 (coffee), 1 (restaurant)');
 
   receiptsStore.seedReceipt('m1', uuid(), {
     issuedAt: hoursAgo(1),

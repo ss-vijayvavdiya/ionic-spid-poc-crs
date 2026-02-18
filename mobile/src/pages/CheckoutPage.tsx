@@ -27,6 +27,7 @@ import { add, remove, cashOutline, cardOutline, walletOutline, gitBranchOutline 
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import HeaderBar from '../components/HeaderBar';
+import ProductThumbnail from '../components/ProductThumbnail';
 import { formatCents } from '../utils/money';
 import { useMerchant } from '../contexts/MerchantContext';
 import { useConnectivity } from '../contexts/ConnectivityContext';
@@ -246,10 +247,13 @@ const CheckoutPage: React.FC = () => {
                     className={pulseProductId === p.id ? 'cart-add-pulse' : ''}
                   >
                     <IonCardContent className="ion-text-center">
-                      <p style={{ fontWeight: 600, margin: 0 }}>{p.name}</p>
-                      <p style={{ margin: '0.25rem 0 0', color: 'var(--ion-color-medium)' }}>
-                        {formatCents(p.priceCents)}
-                      </p>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+                        <ProductThumbnail category={p.category} name={p.name} size="sm" />
+                        <p style={{ fontWeight: 600, margin: 0 }}>{p.name}</p>
+                        <p style={{ margin: 0, color: 'var(--ion-color-medium)' }}>
+                          {formatCents(p.priceCents)}
+                        </p>
+                      </div>
                     </IonCardContent>
                   </IonCard>
                 </IonCol>

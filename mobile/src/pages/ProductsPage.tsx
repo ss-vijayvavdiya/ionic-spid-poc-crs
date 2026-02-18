@@ -21,11 +21,12 @@ import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import HeaderBar from '../components/HeaderBar';
 import EmptyState from '../components/EmptyState';
+import ProductThumbnail from '../components/ProductThumbnail';
 import { formatCents } from '../utils/money';
 import { useMerchant } from '../contexts/MerchantContext';
 import { useConnectivity } from '../contexts/ConnectivityContext';
 import { fetchProducts } from '../api/products';
-import { getProducts, upsertProducts } from '../store/productsRepo';
+import { getProducts, upsertProducts, seedSampleProducts } from '../store/productsRepo';
 import type { Product } from '../types';
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -47,6 +48,7 @@ const ProductsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState('');
+  const [seeding, setSeeding] = useState(false);
 
   const debouncedSearch = useDebounce(search, 300);
 
@@ -80,6 +82,20 @@ const ProductsPage: React.FC = () => {
 
   const handleRefresh = (e: CustomEvent<RefresherEventDetail>) => {
     loadProducts().then(() => e.detail.complete());
+  };
+
+  const handleLoadSampleData = async () => {
+    if (!merchantId || seeding) return;
+    setSeeding(true);
+    try {
+      await seedSampleProducts(merchantId);
+      await loadProducts();
+      setToast(t('products.sampleDataLoaded', 'Sample data loaded'));
+    } catch {
+      setToast(t('common.error'));
+    } finally {
+      setSeeding(false);
+    }
   };
 
   const filtered = products.filter(
@@ -130,8 +146,11 @@ const ProductsPage: React.FC = () => {
         ) : filtered.length === 0 ? (
           <EmptyState
             message={products.length === 0 ? t('products.empty') : t('products.noResults')}
-            ctaLabel={products.length === 0 ? t('products.addProduct') : undefined}
-            onCta={products.length === 0 ? () => history.push('/products/new') : undefined}
+            ctaLabel={products.length === 0 ? t('products.loadSampleData') : undefined}
+            onCta={products.length === 0 ? handleLoadSampleData : undefined}
+            ctaLoading={seeding}
+            secondaryCtaLabel={products.length === 0 ? t('products.addProduct') : undefined}
+            onSecondaryCta={products.length === 0 ? () => history.push('/products/new') : undefined}
           />
         ) : (
           <div className="product-list">
@@ -144,12 +163,17 @@ const ProductsPage: React.FC = () => {
                 className="product-card"
               >
                 <IonCardHeader>
-                  <IonCardTitle>{p.name}</IonCardTitle>
-                  {p.category && (
-                    <p style={{ fontSize: '0.85em', color: 'var(--ion-color-medium)', margin: 0 }}>
-                      {p.category}
-                    </p>
-                  )}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <ProductThumbnail category={p.category} name={p.name} size="md" />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <IonCardTitle>{p.name}</IonCardTitle>
+                      {p.category && (
+                        <p style={{ fontSize: '0.85em', color: 'var(--ion-color-medium)', margin: 0 }}>
+                          {p.category}
+                        </p>
+                      )}
+                    </div>
+                  </div>
                 </IonCardHeader>
                 <IonCardContent>
                   <p style={{ margin: 0, fontWeight: 600 }}>{formatCents(p.priceCents)}</p>

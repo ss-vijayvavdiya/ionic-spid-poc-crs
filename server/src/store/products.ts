@@ -26,7 +26,10 @@ export function clearProducts(): void {
   idCounter = 1;
 }
 
-export function seedProduct(merchantId: string, data: Omit<Product, 'id' | 'merchantId' | 'updatedAt'>): Product {
+export function seedProduct(
+  merchantId: string,
+  data: Omit<Product, 'id' | 'merchantId' | 'updatedAt' | 'isActive'> & { isActive?: boolean }
+): Product {
   const now = new Date().toISOString();
   const product: Product = {
     id: nextId(),

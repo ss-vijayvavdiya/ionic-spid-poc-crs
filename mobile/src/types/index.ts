@@ -9,6 +9,15 @@ export interface Merchant {
   address?: string;
 }
 
+export interface Customer {
+  id: string;
+  merchantId: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  createdAt: string;
+}
+
 export interface UserProfile {
   id: string;
   email?: string;

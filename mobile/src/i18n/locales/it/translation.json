@@ -71,7 +71,8 @@
     "confirmVoid": "Sei sicuro di voler annullare questo scontrino?",
     "confirmRefund": "Sei sicuro di voler rimborsare questo scontrino?",
     "requiresInternet": "L'azione richiede internet",
-    "empty": "Nessuno scontrino"
+    "empty": "Nessuno scontrino",
+    "syncFailed": "Sincronizzazione fallita"
   },
   "products": {
     "title": "Prodotti",
@@ -86,7 +87,9 @@
     "priceRequired": "Il prezzo è obbligatorio",
     "vatRequired": "L'aliquota IVA è obbligatoria",
     "empty": "Nessun prodotto ancora. Aggiungi il tuo primo prodotto per iniziare.",
-    "noResults": "Nessun prodotto corrisponde alla ricerca"
+    "noResults": "Nessun prodotto corrisponde alla ricerca",
+    "loadSampleData": "Carica dati di esempio",
+    "sampleDataLoaded": "Dati di esempio caricati"
   },
   "settings": {
     "title": "Impostazioni",
@@ -121,7 +124,20 @@
     "title": "Report",
     "todaySales": "Vendite di oggi",
     "exportCsv": "Esporta CSV",
+    "exportDate": "Data esportazione",
     "exportSuccess": "CSV esportato"
+  },
+  "customers": {
+    "title": "Clienti",
+    "addCustomer": "Aggiungi cliente",
+    "editCustomer": "Modifica cliente",
+    "name": "Nome",
+    "email": "Email",
+    "phone": "Telefono",
+    "nameRequired": "Il nome è obbligatorio",
+    "emailInvalid": "Email non valida",
+    "confirmDelete": "Eliminare {{name}}?",
+    "empty": "Nessun cliente ancora"
   },
   "support": {
     "title": "Supporto",

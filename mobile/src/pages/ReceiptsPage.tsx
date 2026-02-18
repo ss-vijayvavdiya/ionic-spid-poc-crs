@@ -24,7 +24,10 @@ import HeaderBar from '../components/HeaderBar';
 import EmptyState from '../components/EmptyState';
 import { formatCents } from '../utils/money';
 import { useMerchant } from '../contexts/MerchantContext';
+import { useConnectivity } from '../contexts/ConnectivityContext';
+import { useSync } from '../contexts/SyncContext';
 import { fetchReceipts } from '../api/receipts';
+import { getLocalReceiptsForDisplay, pendingRecordToReceipt } from '../store/receiptsRepo';
 import type { Receipt } from '../types';
 
 type DateGroup = 'today' | 'yesterday' | 'thisWeek' | 'older';
@@ -63,6 +66,8 @@ const ReceiptsPage: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const { merchantId } = useMerchant();
+  const { isOnline } = useConnectivity();
+  const { refreshPendingCount } = useSync();
   const [receipts, setReceipts] = useState<Receipt[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState<string | null>(null);
@@ -76,17 +81,29 @@ const ReceiptsPage: React.FC = () => {
     }
     setLoading(true);
     try {
-      const list = await fetchReceipts(merchantId, {
-        status: filterStatus ?? undefined,
-        payment: filterPayment ?? undefined,
-      });
-      setReceipts(list);
+      let apiList: Receipt[] = [];
+      if (isOnline) {
+        apiList = await fetchReceipts(merchantId, {
+          status: filterStatus ?? undefined,
+          payment: filterPayment ?? undefined,
+        });
+      }
+      const localRecords = await getLocalReceiptsForDisplay(merchantId);
+      const localReceipts = localRecords.map(pendingRecordToReceipt);
+      const apiIds = new Set(apiList.map((r) => r.clientReceiptId ?? r.id));
+      const localOnly = localReceipts.filter((r) => !apiIds.has(r.clientReceiptId));
+      let merged: Receipt[] = [...apiList.map((r) => ({ ...r, syncStatus: undefined as const })), ...localOnly];
+      merged.sort((a, b) => (b.issuedAt > a.issuedAt ? 1 : -1));
+      if (filterStatus) merged = merged.filter((r) => r.status === filterStatus);
+      if (filterPayment) merged = merged.filter((r) => r.paymentMethod === filterPayment);
+      setReceipts(merged);
+      await refreshPendingCount();
     } catch {
       setToast(t('common.error'));
     } finally {
       setLoading(false);
     }
-  }, [merchantId, filterStatus, filterPayment, t]);
+  }, [merchantId, filterStatus, filterPayment, isOnline, t, refreshPendingCount]);
 
   useEffect(() => {
     loadReceipts();
@@ -194,9 +211,17 @@ const ReceiptsPage: React.FC = () => {
                             {formatTime(r.issuedAt)} · {formatCents(r.totalCents)}
                           </p>
                         </div>
-                        <IonBadge color={getStatusColor(r.status)}>
-                          {t(`receipts.status.${(r.status || 'COMPLETED').toLowerCase()}`)}
-                        </IonBadge>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+                          {r.syncStatus === 'PENDING' && (
+                            <IonBadge color="warning">{t('receipts.status.pendingSync')}</IonBadge>
+                          )}
+                          {r.syncStatus === 'FAILED' && (
+                            <IonBadge color="danger">{t('receipts.syncFailed', 'Sync failed')}</IonBadge>
+                          )}
+                          <IonBadge color={getStatusColor(r.status)}>
+                            {t(`receipts.status.${(r.status || 'COMPLETED').toLowerCase()}`)}
+                          </IonBadge>
+                        </div>
                       </div>
                     </IonCardContent>
                   </IonCard>

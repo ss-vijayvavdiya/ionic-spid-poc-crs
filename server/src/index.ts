@@ -8,6 +8,7 @@ import { authRouter } from './routes/auth';
 import { apiRouter } from './routes/api';
 import { productsRouter } from './routes/products';
 import { receiptsRouter } from './routes/receipts';
+import { customersRouter } from './routes/customers';
 import { wellKnownRouter } from './routes/wellKnown';
 import { config } from './config';
 import { runSeed } from './seed';
@@ -35,6 +36,7 @@ app.use('/auth', authRouter);
 app.use('/api', apiRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/receipts', receiptsRouter);
+app.use('/api/customers', customersRouter);
 app.use('/.well-known', wellKnownRouter);
 
 const PORT = config.PORT;

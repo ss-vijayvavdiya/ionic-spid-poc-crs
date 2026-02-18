@@ -71,7 +71,8 @@
     "confirmVoid": "Are you sure you want to void this receipt?",
     "confirmRefund": "Are you sure you want to refund this receipt?",
     "requiresInternet": "Action requires internet",
-    "empty": "No receipts yet"
+    "empty": "No receipts yet",
+    "syncFailed": "Sync failed"
   },
   "products": {
     "title": "Products",
@@ -86,7 +87,9 @@
     "priceRequired": "Price is required",
     "vatRequired": "VAT rate is required",
     "empty": "No products yet. Add your first product to get started.",
-    "noResults": "No products match your search"
+    "noResults": "No products match your search",
+    "loadSampleData": "Load sample data",
+    "sampleDataLoaded": "Sample data loaded"
   },
   "settings": {
     "title": "Settings",
@@ -121,7 +124,20 @@
     "title": "Reports",
     "todaySales": "Today's sales",
     "exportCsv": "Export CSV",
+    "exportDate": "Export date",
     "exportSuccess": "CSV exported"
+  },
+  "customers": {
+    "title": "Customers",
+    "addCustomer": "Add Customer",
+    "editCustomer": "Edit Customer",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "nameRequired": "Name is required",
+    "emailInvalid": "Invalid email address",
+    "confirmDelete": "Delete {{name}}?",
+    "empty": "No customers yet"
   },
   "support": {
     "title": "Support",
