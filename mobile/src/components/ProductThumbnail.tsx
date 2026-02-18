@@ -42,15 +42,26 @@ const ProductThumbnail: React.FC<ProductThumbnailProps> = ({
   const px = sizes[size];
   const icon = category ? (CATEGORY_ICONS[category] ?? CATEGORY_ICONS.default) : CATEGORY_ICONS.default;
 
+  const accentColors: Record<string, string> = {
+    Beverages: '#0d9488',
+    Pastries: '#f59e0b',
+    Food: '#f43f5e',
+    Desserts: '#6366f1',
+    Main: '#10b981',
+    Starters: '#ec4899',
+    default: '#64748b',
+  };
+  const accent = category ? (accentColors[category] ?? accentColors.default) : accentColors.default;
+
   if (imageUrl) {
     return (
       <div
         style={{
           width: px,
           height: px,
-          borderRadius: 8,
+          borderRadius: 12,
           overflow: 'hidden',
-          background: 'var(--ion-color-light)',
+          background: `${accent}18`,
           flexShrink: 0,
         }}
       >
@@ -64,8 +75,8 @@ const ProductThumbnail: React.FC<ProductThumbnailProps> = ({
       style={{
         width: px,
         height: px,
-        borderRadius: 8,
-        background: 'var(--ion-color-light)',
+        borderRadius: 12,
+        background: `${accent}18`,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -73,7 +84,7 @@ const ProductThumbnail: React.FC<ProductThumbnailProps> = ({
       }}
       aria-hidden
     >
-      <IonIcon icon={icon} style={{ fontSize: px * 0.45, color: 'var(--ion-color-medium)' }} />
+      <IonIcon icon={icon} style={{ fontSize: px * 0.45, color: accent }} />
     </div>
   );
 };

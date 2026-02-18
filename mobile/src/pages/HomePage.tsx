@@ -46,7 +46,10 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     if (!token) return;
     fetch(`${BASE_URL}/api/me`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        ...(BASE_URL.includes('ngrok') && { 'ngrok-skip-browser-warning': '1' }),
+      },
     })
       .then((res) => {
         if (!res.ok) throw new Error(res.statusText);

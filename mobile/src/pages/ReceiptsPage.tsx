@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import HeaderBar from '../components/HeaderBar';
 import EmptyState from '../components/EmptyState';
+import SkeletonCard from '../components/SkeletonCard';
 import { formatCents } from '../utils/money';
 import { useMerchant } from '../contexts/MerchantContext';
 import { useConnectivity } from '../contexts/ConnectivityContext';
@@ -178,9 +179,10 @@ const ReceiptsPage: React.FC = () => {
         </div>
 
         {loading ? (
-          <div className="ion-text-center ion-padding">
-            <IonSpinner name="crescent" />
-            <p>{t('common.loading')}</p>
+          <div className="product-list">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <SkeletonCard key={i} variant="receipt" />
+            ))}
           </div>
         ) : receipts.length === 0 ? (
           <EmptyState
@@ -200,7 +202,10 @@ const ReceiptsPage: React.FC = () => {
                     key={r.id}
                     button
                     onClick={() => history.push(`/receipts/${r.id}`)}
-                    style={{ animationDelay: `${i * 40}ms` }}
+                    style={{
+                      animationDelay: `${i * 40}ms`,
+                      borderLeft: `4px solid ${r.status === 'COMPLETED' ? '#10b981' : r.status === 'VOIDED' ? '#ef4444' : '#f59e0b'}`,
+                    }}
                     className="receipt-card"
                   >
                     <IonCardContent>

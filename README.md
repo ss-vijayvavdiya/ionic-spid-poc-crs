@@ -1,6 +1,6 @@
 # SPID SSO POC — Ionic React + Node.js + Signicat Sandbox
 
-A **production-style** proof-of-concept for **SPID (Sistema Pubblico di Identità Digitale)** authentication in a mobile app, using:
+A **production-style** proof-of-concept for **SPID (Sistema Pubblico di Identità Digitale)** authentication in a mobile app, combined with a **POS Receipt** workflow (checkout, products, customers, receipts, reports).
 
 > **Stakeholder documentation:** For architecture, approach, implementation rationale, and Mermaid diagrams (flows, sequence, components), see **[DOCUMENTATION.md](DOCUMENTATION.md)**.
 
@@ -8,6 +8,7 @@ A **production-style** proof-of-concept for **SPID (Sistema Pubblico di Identit�
 - **Mobile**: Ionic React (TypeScript) + Cordova (Android)
 - **Backend**: Node.js (TypeScript) + Express
 - **Auth flow**: OIDC Authorization Code with backend token exchange; backend mints its own JWT for app API calls
+- **POS features**: Merchant selection, checkout, products, customers, receipts, reports; offline support; i18n (EN, IT, DE)
 
 The app opens the **system browser** for login; after Signicat redirects to our callback URL, the app can open via **HTTPS App Links** (when host is stable) or via a **custom scheme fallback** (`smartsense://auth/callback`) so it works with ngrok’s changing free URL.
 
@@ -147,7 +148,25 @@ Put the values in `server/.env` (see [Running the POC](#5-running-the-poc)).
    ```
    (If you use Capacitor instead of Cordova, adjust: add Android, add InAppBrowser and a custom URL scheme / App Links plugin as per Capacitor docs.)
 
-### 5.2 Start server, ngrok, and update config
+### 5.2 Start server (and optionally ngrok)
+
+**Option A — Local dev (no SPID, no ngrok)**
+
+1. **Terminal 1 — Backend**
+   ```bash
+   cd server
+   npm run dev
+   ```
+   Ensure `SEED_SAMPLE_DATA=true` in `server/.env` for sample merchants, products, customers.
+
+2. **Terminal 2 — Mobile**
+   ```bash
+   cd mobile
+   npm run dev
+   ```
+   Open `http://localhost:5173` in a browser. Set `mobile/.env.local` with `VITE_BASE_URL=http://localhost:4000`. Use **"Dev login (skip SPID)"** to sign in and test the POS flow.
+
+**Option B — Full SPID flow (with ngrok)**
 
 1. **Terminal 1 — Backend**
    ```bash
@@ -182,9 +201,9 @@ From the repo root:
 
 ```bash
 cd mobile
-npx ionic build
-   npx cordova prepare android
-   npx npx cordova run android
+npm run build
+npx cordova prepare android
+npx cordova run android
 ```
 
 Or with Ionic CLI:
@@ -192,7 +211,7 @@ Or with Ionic CLI:
 ```bash
 cd mobile
 ionic build
-ionic cap run android
+ionic cordova run android
 ```
 
 If you use **Cordova** only:
@@ -201,7 +220,7 @@ If you use **Cordova** only:
 npx cordova run android
 ```
 
-The app will install on the emulator or connected device. Tap **Login with SPID**; the system browser opens the backend’s `/auth/spid/start`, which redirects to Signicat. After login, Signicat redirects to `https://<ngrok-domain>/auth/callback`. Use **Continue in app** (custom scheme `smartsense://auth/callback?code=...&state=...`) if the app does not open automatically. The app then exchanges `code`/`state` for your backend JWT and can call `/api/me`.
+The app will install on the emulator or connected device. Tap **Login with SPID**; the system browser opens the backend’s `/auth/spid/start`, which redirects to Signicat. After login, Signicat redirects to `https://<ngrok-domain>/auth/callback`. The server returns `302` to `smartsense://auth/callback?code=...&state=...`, which opens the app automatically. If ngrok shows a "Visit Site" interstitial, tap it once. The app then exchanges `code`/`state` for your backend JWT and can call `/api/me`.
 
 ---
 
@@ -224,6 +243,18 @@ The app will install on the emulator or connected device. Tap **Login with SPID*
 - Ensure you are using the **debug** keystore for debug builds: `~/.android/debug.keystore`, alias `androiddebugkey`, passwords `android`.
 - Re-run `keytool -list -v -keystore ~/.android/debug.keystore ...` and copy the SHA256 (without colons) into `ANDROID_SHA256_FINGERPRINT`.
 - Rebuild the app and restart the server so the new fingerprint is served.
+
+### App freezes on ngrok-free.app after SPID login (CSP error)
+
+- **Symptom:** App freezes on the ngrok page after successful SPID login, with a CSP error like `Refused to load the image 'https://ngrok.com/assets/favicon.ico' because it violates Content Security Policy`.
+- **Cause:** InAppBrowser (`_blank`) loads the ngrok interstitial page, which has a restrictive CSP that blocks ngrok assets. The page fails to render and the app appears frozen.
+- **Fix:** The app now uses the **system browser** (`_system`) for login instead of InAppBrowser. The system browser handles the redirect; when the server returns `302` to `smartsense://auth/callback`, the app opens automatically via `handleOpenURL`. Rebuild the app if you had an older version.
+
+### 404 on auth/callback after SPID login
+
+- **ngrok free URLs change** every time you restart ngrok. If you see `GET https://...ngrok-free.app/auth/callback 404`, the tunnel for that URL is likely inactive.
+- **Fix:** In Terminal 1 start ngrok: `ngrok http 4000`. In Terminal 2 run `node scripts/start-ngrok-and-update.js`. Update the Signicat redirect URI to the printed URL (`https://<new-domain>/auth/callback`). Restart the server. Try login again.
+- **Verify:** Open `https://<ngrok-domain>/health` in a browser — you should see `{"ok":true,...}`. If you get 404, ngrok is not forwarding to your server.
 
 ### Redirect URI mismatch on Signicat
 
@@ -268,16 +299,22 @@ The app will install on the emulator or connected device. Tap **Login with SPID*
 ```text
 ionic-spid-poc-crs/
 ├── README.md
+├── DOCUMENTATION.md          # Stakeholder docs, architecture, flows
 ├── package.json              # Root scripts: install:all, server, mobile:android, ngrok:update
 ├── .gitignore
 ├── server/
 │   ├── src/
 │   │   ├── config.ts         # Env validation (zod)
 │   │   ├── index.ts          # Express app, mounts routes
+│   │   ├── seed.ts           # Sample merchants, products, customers, receipts
 │   │   ├── store.ts          # In-memory state/nonce store
+│   │   ├── store/            # products, receipts, customers, merchants
 │   │   └── routes/
-│   │       ├── auth.ts       # /auth/spid/start, /auth/callback, /auth/exchange
+│   │       ├── auth.ts       # /auth/spid/start, /auth/callback, /auth/exchange, /auth/dev-token
 │   │       ├── api.ts        # /api/me (protected)
+│   │       ├── products.ts   # /api/products
+│   │       ├── receipts.ts   # /api/receipts
+│   │       ├── customers.ts  # /api/customers
 │   │       └── wellKnown.ts  # /.well-known/assetlinks.json
 │   ├── .env.example
 │   ├── .env                  # Created by you; BASE_URL updated by script
@@ -285,12 +322,24 @@ ionic-spid-poc-crs/
 │   └── tsconfig.json
 ├── mobile/
 │   ├── src/
-│   │   ├── config.ts         # BASE_URL (updated by script)
+│   │   ├── config.ts         # BASE_URL (VITE_BASE_URL from .env.local)
 │   │   ├── App.tsx           # handleOpenURL, routes, exchangeAndNavigate
 │   │   ├── main.tsx
+│   │   ├── theme/            # variables.css, design-tokens.css
+│   │   ├── contexts/         # Auth, Merchant, Connectivity, Sync, User
+│   │   ├── store/            # productsRepo, receiptsRepo (Dexie/IndexedDB)
+│   │   ├── api/              # products, receipts API client
+│   │   ├── components/       # HeaderBar, Menu, EmptyState, ProductThumbnail, etc.
+│   │   ├── i18n/             # EN, IT, DE translations
 │   │   └── pages/
 │   │       ├── LoginPage.tsx
-│   │       └── HomePage.tsx
+│   │       ├── MerchantSelectPage.tsx
+│   │       ├── CheckoutPage.tsx
+│   │       ├── ProductsPage.tsx, ProductFormPage.tsx
+│   │       ├── CustomersPage.tsx, CustomerFormPage.tsx
+│   │       ├── ReceiptsPage.tsx, ReceiptDetailPage.tsx
+│   │       ├── ReportsPage.tsx
+│   │       └── ...
 │   ├── config.xml            # Cordova: smartsense scheme, HTTPS intent-filter
 │   ├── index.html
 │   ├── package.json
@@ -298,7 +347,7 @@ ionic-spid-poc-crs/
 │   ├── tsconfig.json
 │   └── ionic.config.json
 └── scripts/
-    ├── start-ngrok-and-update.js   # Fetches ngrok URL, updates server/.env, mobile/src/config.ts, mobile/config.xml host
+    ├── start-ngrok-and-update.js   # Fetches ngrok URL, updates server/.env, mobile/src/config.ts
     └── update-env-files.js         # Manual: BASE_URL=... node scripts/update-env-files.js
 ```
 
@@ -347,7 +396,7 @@ npm run ngrok:update
 # Then update Signicat redirect URI to the printed URL + /auth/callback
 
 # 7) Build and run Android app
-cd mobile && npm run build && npx npx cordova run android
+cd mobile && npm run build && npx cordova prepare android && npx cordova run android
 ```
 
 ---

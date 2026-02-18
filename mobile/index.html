@@ -3,7 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>SPID POC</title>
+  <meta name="theme-color" content="#0d9488" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="icon" href="data:," />
+  <title>POS Receipt</title>
+  <!-- Capture deep links before React loads (Cordova calls handleOpenURL early) -->
+  <script>
+    window.__spidCallbackUrl = null;
+    window.handleOpenURL = function (url) {
+      window.__spidCallbackUrl = url;
+    };
+  </script>
+  <script src="cordova.js"></script>
   <script type="module" src="/src/main.tsx"></script>
 </head>
 <body>

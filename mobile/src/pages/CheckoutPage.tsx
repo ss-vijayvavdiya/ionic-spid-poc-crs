@@ -2,6 +2,7 @@
  * Checkout: product grid, cart, payment modal, issue receipt.
  */
 import React, { useState, useEffect, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   IonContent,
   IonPage,
@@ -28,11 +29,13 @@ import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import HeaderBar from '../components/HeaderBar';
 import ProductThumbnail from '../components/ProductThumbnail';
+import SkeletonCard from '../components/SkeletonCard';
 import { formatCents } from '../utils/money';
 import { useMerchant } from '../contexts/MerchantContext';
 import { useConnectivity } from '../contexts/ConnectivityContext';
 import { useSync } from '../contexts/SyncContext';
 import { fetchProducts } from '../api/products';
+import { fetchReceipts } from '../api/receipts';
 import { getProducts, upsertProducts } from '../store/productsRepo';
 import { createReceipt } from '../api/receipts';
 import { addPendingReceipt } from '../store/receiptsRepo';
@@ -69,6 +72,7 @@ const PAYMENT_OPTIONS: { method: PaymentMethod; icon: typeof cashOutline }[] = [
 const CheckoutPage: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
+  const location = useLocation<{ reorderItems?: import('../types').CartItem[] }>();
   const { merchantId } = useMerchant();
   const { isOnline } = useConnectivity();
   const { refreshPendingCount } = useSync();
@@ -81,8 +85,17 @@ const CheckoutPage: React.FC = () => {
   const [issuing, setIssuing] = useState(false);
   const [toast, setToast] = useState('');
   const [pulseProductId, setPulseProductId] = useState<string | null>(null);
+  const [todaySales, setTodaySales] = useState<{ totalCents: number; count: number } | null>(null);
 
   const debouncedSearch = useDebounce(search, 300);
+
+  useEffect(() => {
+    const items = location.state?.reorderItems;
+    if (items && items.length > 0) {
+      setCart(items);
+      history.replace('/checkout', {});
+    }
+  }, [location.state, history]);
 
   useEffect(() => {
     if (!merchantId) {
@@ -108,6 +121,20 @@ const CheckoutPage: React.FC = () => {
     setLoading(true);
     load();
   }, [merchantId, isOnline, t]);
+
+  useEffect(() => {
+    if (!merchantId || !isOnline) return;
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+    fetchReceipts(merchantId, { from: todayStart.toISOString(), to: todayEnd.toISOString(), status: 'COMPLETED' })
+      .then((list) => {
+        const totalCents = list.reduce((a, r) => a + r.totalCents, 0);
+        setTodaySales({ totalCents, count: list.length });
+      })
+      .catch(() => setTodaySales(null));
+  }, [merchantId, isOnline]);
 
   const filteredProducts = products.filter(
     (p) =>
@@ -224,6 +251,27 @@ const CheckoutPage: React.FC = () => {
     <IonPage>
       <HeaderBar title={t('checkout.title')} />
       <IonContent className="ion-padding">
+        {todaySales !== null && (
+          <IonCard
+            button
+            onClick={() => history.push('/reports')}
+            style={{
+              marginBottom: 16,
+              background: 'linear-gradient(135deg, #0d9488 0%, #0f766e 100%)',
+              color: '#fff',
+              boxShadow: '0 4px 16px rgba(13, 148, 136, 0.3)',
+            }}
+          >
+            <IonCardContent className="ion-text-center">
+              <p style={{ margin: 0, fontSize: '0.85em', color: 'rgba(255,255,255,0.9)' }}>{t('reports.todaySales')}</p>
+              <p style={{ margin: '0.25rem 0 0', fontSize: '1.5rem', fontWeight: 700, color: '#fff' }}>{formatCents(todaySales.totalCents)}</p>
+              <p style={{ margin: '0.25rem 0 0', fontSize: '0.85em', color: 'rgba(255,255,255,0.85)' }}>
+                {todaySales.count} {t('receipts.title').toLowerCase()}
+              </p>
+            </IonCardContent>
+          </IonCard>
+        )}
+
         <IonSearchbar
           value={search}
           onIonInput={(e) => setSearch(e.detail.value ?? '')}
@@ -232,10 +280,15 @@ const CheckoutPage: React.FC = () => {
         />
 
         {loading ? (
-          <div className="ion-text-center ion-padding">
-            <IonSpinner name="crescent" />
-            <p>{t('common.loading')}</p>
-          </div>
+          <IonGrid>
+            <IonRow>
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <IonCol size="6" sizeMd="4" key={i}>
+                  <SkeletonCard variant="product-grid" />
+                </IonCol>
+              ))}
+            </IonRow>
+          </IonGrid>
         ) : (
           <IonGrid>
             <IonRow>
@@ -269,10 +322,11 @@ const CheckoutPage: React.FC = () => {
             bottom: 0,
             left: 0,
             right: 0,
-            background: 'var(--ion-background-color)',
+            background: '#ffffff',
             padding: '1rem',
-            borderTop: '1px solid var(--ion-color-light)',
-            boxShadow: '0 -2px 4px rgba(0,0,0,0.08)',
+            borderTop: '2px solid var(--ion-color-primary)',
+            boxShadow: '0 -4px 12px rgba(13, 148, 136, 0.08)',
+            borderRadius: '16px 16px 0 0',
           }}
         >
           <h3 style={{ margin: '0 0 0.5rem' }}>{t('checkout.cart')}</h3>

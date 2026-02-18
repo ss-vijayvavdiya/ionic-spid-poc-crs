@@ -50,12 +50,22 @@ const Menu: React.FC = () => {
 
   return (
     <>
+      <div
+        style={{
+          padding: '1.5rem 1rem',
+          background: 'linear-gradient(135deg, #0d9488 0%, #0f766e 100%)',
+          color: '#fff',
+        }}
+      >
+        <p style={{ margin: 0, fontSize: '0.85rem', opacity: 0.9 }}>POS Receipt</p>
+        <p style={{ margin: '0.25rem 0 0', fontWeight: 600, fontSize: '1.1rem' }}>{displayName || t('menu.guest')}</p>
+      </div>
       <IonList>
-        <IonListHeader>POS</IonListHeader>
+        <IonListHeader style={{ color: 'var(--ion-color-primary)', fontWeight: 600 }}>Menu</IonListHeader>
         {menuItems.map((item) => (
           <IonMenuToggle key={item.path}>
-            <IonItem button routerLink={item.path} routerDirection="none">
-              <IonIcon slot="start" icon={item.icon} />
+            <IonItem button routerLink={item.path} routerDirection="none" detail={false}>
+              <IonIcon slot="start" icon={item.icon} style={{ color: 'var(--ion-color-primary)' }} />
               <IonLabel>{t(`menu.${item.key}`)}</IonLabel>
             </IonItem>
           </IonMenuToggle>
@@ -63,12 +73,12 @@ const Menu: React.FC = () => {
       </IonList>
       <IonList>
         <IonMenuToggle>
-          <IonItem button routerLink="/profile" routerDirection="none">
-            <IonIcon slot="start" icon={personCircleOutline} />
+          <IonItem button routerLink="/profile" routerDirection="none" detail={false}>
+            <IonIcon slot="start" icon={personCircleOutline} style={{ color: 'var(--ion-color-secondary)' }} />
             <IonLabel>{displayName || t('menu.guest')}</IonLabel>
           </IonItem>
         </IonMenuToggle>
-        <IonItem button onClick={handleLogout}>
+        <IonItem button onClick={handleLogout} style={{ '--color': 'var(--ion-color-danger)' } as React.CSSProperties}>
           <IonIcon slot="start" icon={logOutOutline} />
           <IonLabel>{t('menu.logout')}</IonLabel>
         </IonItem>

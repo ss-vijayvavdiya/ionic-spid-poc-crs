@@ -9,12 +9,17 @@
   <description>SPID SSO POC with Signicat</description>
   <author email="dev@example.com" href="https://example.com">SPID POC</author>
   <content src="index.html" />
+  <preference name="android-compileSdkVersion" value="35" />
   <access origin="*" />
   <allow-navigation href="*" />
   <allow-intent href="https://*" />
   <allow-intent href="smartsense://*" />
   <plugin name="cordova-plugin-network-information" spec="~3.0.0" />
   <platform name="android">
+    <!-- Allow HTTP (cleartext) for local dev: http://10.0.2.2:4000 or localhost -->
+    <edit-config file="app/src/main/AndroidManifest.xml" target="/manifest/application" mode="merge">
+      <application android:usesCleartextTraffic="true" />
+    </edit-config>
     <allow-intent href="market:*" />
     <!-- Custom URL scheme: smartsense://auth/callback?code=...&state=... -->
     <intent-filter>

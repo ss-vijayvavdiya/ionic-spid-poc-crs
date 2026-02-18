@@ -25,11 +25,15 @@ export function MerchantLoader({ children }: { children: React.ReactNode }) {
       return;
     }
     fetch(`${BASE_URL}/api/me`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        ...(BASE_URL.includes('ngrok') && { 'ngrok-skip-browser-warning': '1' }),
+      },
     })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        const merchants = (data?.merchants as Merchant[] | undefined) ?? MOCK_MERCHANTS;
+        const apiMerchants = data?.merchants as Merchant[] | undefined;
+        const merchants = apiMerchants?.length ? apiMerchants : MOCK_MERCHANTS;
         setMerchants(merchants);
         const u = data?.user as { sub?: string; name?: string; email?: string; given_name?: string; family_name?: string } | undefined;
         setUser(u ? { sub: u.sub, name: u.name, email: u.email, given_name: u.given_name, family_name: u.family_name } : null);

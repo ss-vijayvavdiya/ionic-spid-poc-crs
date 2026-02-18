@@ -23,9 +23,9 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   onSecondaryCta,
   children,
 }) => (
-  <IonCard className="empty-state">
+  <IonCard className="empty-state" style={{ borderLeft: '4px solid var(--ion-color-primary)' }}>
     <IonCardContent className="ion-text-center ion-padding">
-      <p className="text-body" style={{ margin: 0, color: 'var(--ion-color-medium)' }}>{message}</p>
+      <p className="text-body" style={{ margin: 0, color: 'var(--ion-color-medium)', lineHeight: 1.5 }}>{message}</p>
       <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap', marginTop: 12 }}>
         {ctaLabel && onCta && (
           <IonButton size="small" fill="solid" onClick={onCta} disabled={ctaLoading}>

@@ -15,17 +15,25 @@ import {
   IonRefresherContent,
   RefresherEventDetail,
   IonToast,
+  IonList,
+  IonItemSliding,
+  IonItem,
+  IonItemOptions,
+  IonItemOption,
+  IonLabel,
+  IonAlert,
 } from '@ionic/react';
-import { add } from 'ionicons/icons';
+import { add, createOutline, eyeOffOutline } from 'ionicons/icons';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import HeaderBar from '../components/HeaderBar';
 import EmptyState from '../components/EmptyState';
 import ProductThumbnail from '../components/ProductThumbnail';
+import SkeletonCard from '../components/SkeletonCard';
 import { formatCents } from '../utils/money';
 import { useMerchant } from '../contexts/MerchantContext';
 import { useConnectivity } from '../contexts/ConnectivityContext';
-import { fetchProducts } from '../api/products';
+import { fetchProducts, updateProduct } from '../api/products';
 import { getProducts, upsertProducts, seedSampleProducts } from '../store/productsRepo';
 import type { Product } from '../types';
 
@@ -49,6 +57,8 @@ const ProductsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState('');
   const [seeding, setSeeding] = useState(false);
+  const [deactivateProduct, setDeactivateProduct] = useState<Product | null>(null);
+  const slidingRefs = React.useRef<{ [key: string]: HTMLIonItemSlidingElement | null }>({});
 
   const debouncedSearch = useDebounce(search, 300);
 
@@ -98,6 +108,19 @@ const ProductsPage: React.FC = () => {
     }
   };
 
+  const handleDeactivate = async (p: Product) => {
+    if (!merchantId) return;
+    setDeactivateProduct(null);
+    slidingRefs.current[p.id]?.close();
+    try {
+      await updateProduct(p.id, merchantId, { isActive: false });
+      setProducts((prev) => prev.filter((x) => x.id !== p.id));
+      setToast(t('common.saved'));
+    } catch {
+      setToast(t('common.error'));
+    }
+  };
+
   const filtered = products.filter(
     (p) =>
       !debouncedSearch ||
@@ -133,9 +156,10 @@ const ProductsPage: React.FC = () => {
         />
 
         {loading ? (
-          <div className="ion-text-center ion-padding">
-            <IonSpinner name="crescent" />
-            <p>{t('common.loading')}</p>
+          <div className="product-list">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <SkeletonCard key={i} variant="product" />
+            ))}
           </div>
         ) : error ? (
           <IonCard color="danger">
@@ -153,38 +177,65 @@ const ProductsPage: React.FC = () => {
             onSecondaryCta={products.length === 0 ? () => history.push('/products/new') : undefined}
           />
         ) : (
-          <div className="product-list">
+          <IonList className="product-list">
             {filtered.map((p, i) => (
-              <IonCard
+              <IonItemSliding
                 key={p.id}
-                button
-                onClick={() => history.push(`/products/${p.id}/edit`)}
+                ref={(el) => { slidingRefs.current[p.id] = el; }}
                 style={{ animationDelay: `${i * 50}ms` }}
                 className="product-card"
               >
-                <IonCardHeader>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <IonItem
+                  button
+                  onClick={() => history.push(`/products/${p.id}/edit`)}
+                  detail={false}
+                  lines="full"
+                  className="ion-padding-vertical"
+                >
+                  <div slot="start" style={{ marginRight: 12 }}>
                     <ProductThumbnail category={p.category} name={p.name} size="md" />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <IonCardTitle>{p.name}</IonCardTitle>
-                      {p.category && (
-                        <p style={{ fontSize: '0.85em', color: 'var(--ion-color-medium)', margin: 0 }}>
-                          {p.category}
-                        </p>
-                      )}
-                    </div>
                   </div>
-                </IonCardHeader>
-                <IonCardContent>
-                  <p style={{ margin: 0, fontWeight: 600 }}>{formatCents(p.priceCents)}</p>
-                  <p style={{ fontSize: '0.85em', color: 'var(--ion-color-medium)', margin: '0.25rem 0 0' }}>
-                    VAT {p.vatRate}% {p.sku && `• ${p.sku}`}
-                  </p>
-                </IonCardContent>
-              </IonCard>
+                  <IonLabel className="ion-padding-start">
+                    <h2 style={{ fontWeight: 600 }}>{p.name}</h2>
+                    {p.category && (
+                      <p style={{ fontSize: '0.85em', color: 'var(--ion-color-medium)', margin: 0 }}>
+                        {p.category}
+                      </p>
+                    )}
+                    <p style={{ margin: '0.25rem 0 0', fontWeight: 600 }}>{formatCents(p.priceCents)}</p>
+                    <p style={{ fontSize: '0.85em', color: 'var(--ion-color-medium)', margin: 0 }}>
+                      VAT {p.vatRate}% {p.sku && `• ${p.sku}`}
+                    </p>
+                  </IonLabel>
+                </IonItem>
+                <IonItemOptions side="end">
+                  <IonItemOption color="primary" onClick={() => { slidingRefs.current[p.id]?.close(); history.push(`/products/${p.id}/edit`); }}>
+                    <IonIcon icon={createOutline} slot="icon-only" />
+                    {t('common.edit')}
+                  </IonItemOption>
+                  <IonItemOption color="warning" onClick={() => { if (!isOnline) { setToast(t('receipts.requiresInternet')); slidingRefs.current[p.id]?.close(); return; } setDeactivateProduct(p); }}>
+                    <IonIcon icon={eyeOffOutline} slot="icon-only" />
+                    {t('products.deactivate')}
+                  </IonItemOption>
+                </IonItemOptions>
+              </IonItemSliding>
             ))}
-          </div>
+          </IonList>
         )}
+
+        <IonAlert
+          isOpen={!!deactivateProduct}
+          onDidDismiss={() => {
+            if (deactivateProduct) slidingRefs.current[deactivateProduct.id]?.close();
+            setDeactivateProduct(null);
+          }}
+          header={t('products.deactivate')}
+          message={t('products.confirmDeactivate', { name: deactivateProduct?.name ?? '' })}
+          buttons={[
+            { text: t('common.cancel'), role: 'cancel' },
+            { text: t('products.deactivate'), role: 'destructive', handler: () => deactivateProduct && handleDeactivate(deactivateProduct) },
+          ]}
+        />
 
         <IonFab vertical="bottom" horizontal="end" slot="fixed">
           <IonFabButton onClick={() => history.push('/products/new')}>

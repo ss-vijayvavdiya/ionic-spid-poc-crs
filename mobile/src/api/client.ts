@@ -27,6 +27,7 @@ export async function apiFetch<T>(
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${token}`,
+    ...(BASE_URL.includes('ngrok') && { 'ngrok-skip-browser-warning': '1' }),
   };
   if (options.merchantId) {
     headers['X-Merchant-Id'] = options.merchantId;

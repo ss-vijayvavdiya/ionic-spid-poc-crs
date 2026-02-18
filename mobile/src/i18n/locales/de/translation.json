@@ -66,6 +66,9 @@
     "detail": "Belegdetails",
     "send": "Senden",
     "print": "Drucken",
+    "quickReorder": "Bestellung wiederholen",
+    "shareSuccess": "Geteilt",
+    "copiedToClipboard": "In Zwischenablage kopiert",
     "void": "Stornieren",
     "refund": "Erstattung",
     "confirmVoid": "Möchten Sie diesen Beleg wirklich stornieren?",
@@ -89,7 +92,9 @@
     "empty": "Noch keine Produkte. Fügen Sie Ihr erstes Produkt hinzu.",
     "noResults": "Keine Produkte entsprechen der Suche",
     "loadSampleData": "Beispieldaten laden",
-    "sampleDataLoaded": "Beispieldaten geladen"
+    "sampleDataLoaded": "Beispieldaten geladen",
+    "deactivate": "Deaktivieren",
+    "confirmDeactivate": "{{name}} deaktivieren? Wird an der Kasse ausgeblendet."
   },
   "settings": {
     "title": "Einstellungen",
@@ -125,6 +130,9 @@
     "todaySales": "Heutige Verkäufe",
     "exportCsv": "CSV exportieren",
     "exportDate": "Exportdatum",
+    "exportFrom": "Von",
+    "exportTo": "Bis",
+    "dateRangeInvalid": "Startdatum muss vor Enddatum liegen",
     "exportSuccess": "CSV exportiert"
   },
   "customers": {

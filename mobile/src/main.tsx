@@ -11,6 +11,10 @@ import {
   cubeOutline,
   receiptOutline,
   refreshOutline,
+  createOutline,
+  eyeOffOutline,
+  shareOutline,
+  repeatOutline,
 } from 'ionicons/icons';
 import { IonApp, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
@@ -25,8 +29,13 @@ addIcons({
   cubeOutline,
   receiptOutline,
   refreshOutline,
+  createOutline,
+  eyeOffOutline,
+  shareOutline,
+  repeatOutline,
 });
 import '@ionic/react/css/core.css';
+import './theme/variables.css';
 import './theme/design-tokens.css';
 import '@ionic/react/css/normalize.css';
 import '@ionic/react/css/structure.css';

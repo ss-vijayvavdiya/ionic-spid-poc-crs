@@ -60,7 +60,12 @@ const ReportsPage: React.FC = () => {
   const [todaySales, setTodaySales] = useState(0);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState('');
-  const [exportDate, setExportDate] = useState(() => {
+  const [exportFrom, setExportFrom] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 7);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  });
+  const [exportTo, setExportTo] = useState(() => {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   });
@@ -99,12 +104,16 @@ const ReportsPage: React.FC = () => {
       setToast(t('receipts.requiresInternet'));
       return;
     }
+    if (exportFrom > exportTo) {
+      setToast(t('reports.dateRangeInvalid', 'From date must be before To date'));
+      return;
+    }
     try {
-      const from = `${exportDate}T00:00:00.000`;
-      const to = `${exportDate}T23:59:59.999`;
+      const from = `${exportFrom}T00:00:00.000`;
+      const to = `${exportTo}T23:59:59.999`;
       const list = await fetchReceipts(merchantId, { from, to });
       const csv = receiptsToCsv(list);
-      downloadCsv(csv, `receipts-${exportDate}.csv`);
+      downloadCsv(csv, `receipts-${exportFrom}-to-${exportTo}.csv`);
       setToast(t('reports.exportSuccess'));
     } catch {
       setToast(t('common.error'));
@@ -143,11 +152,19 @@ const ReportsPage: React.FC = () => {
 
         <h3>{t('reports.exportCsv')}</h3>
         <IonItem>
-          <IonLabel position="stacked">{t('reports.exportDate', 'Export date')}</IonLabel>
+          <IonLabel position="stacked">{t('reports.exportFrom', 'From')}</IonLabel>
           <IonInput
             type="date"
-            value={exportDate}
-            onIonInput={(e) => setExportDate(e.detail.value ?? exportDate)}
+            value={exportFrom}
+            onIonInput={(e) => setExportFrom(e.detail.value ?? exportFrom)}
+          />
+        </IonItem>
+        <IonItem>
+          <IonLabel position="stacked">{t('reports.exportTo', 'To')}</IonLabel>
+          <IonInput
+            type="date"
+            value={exportTo}
+            onIonInput={(e) => setExportTo(e.detail.value ?? exportTo)}
           />
         </IonItem>
         <IonButton expand="block" onClick={handleExport} disabled={!isOnline} className="ion-margin-top">

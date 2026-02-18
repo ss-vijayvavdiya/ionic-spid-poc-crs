@@ -10,17 +10,21 @@ import {
   IonSpinner,
   IonBadge,
   IonAlert,
+  IonIcon,
 } from '@ionic/react';
+import { shareOutline, repeatOutline } from 'ionicons/icons';
 import { useTranslation } from 'react-i18next';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, useHistory } from 'react-router-dom';
 import HeaderBar from '../components/HeaderBar';
 import { formatCents } from '../utils/money';
+import { triggerReceiptCelebration } from '../utils/confetti';
 import { useMerchant } from '../contexts/MerchantContext';
 import { getReceipt, voidReceipt, refundReceipt } from '../api/receipts';
 import type { Receipt } from '../types';
 
 const ReceiptDetailPage: React.FC = () => {
   const { t } = useTranslation();
+  const history = useHistory();
   const { id } = useParams<{ id: string }>();
   const location = useLocation<{ fromCheckout?: boolean }>();
   const fromCheckout = location.state?.fromCheckout ?? false;
@@ -46,6 +50,14 @@ const ReceiptDetailPage: React.FC = () => {
     setLoading(true);
     loadReceipt();
   }, [merchantId, id, loadReceipt]);
+
+  const celebrationFired = React.useRef(false);
+  useEffect(() => {
+    if (fromCheckout && receipt && !loading && !celebrationFired.current) {
+      celebrationFired.current = true;
+      triggerReceiptCelebration();
+    }
+  }, [fromCheckout, receipt, loading]);
 
   const handleVoid = async () => {
     if (!merchantId || !id) return;
@@ -74,7 +86,46 @@ const ReceiptDetailPage: React.FC = () => {
   const handleAction = (action: string) => {
     if (action === 'void') setConfirmAction('void');
     else if (action === 'refund') setConfirmAction('refund');
+    else if (action === 'send') handleShare();
     else setToast(t('receipts.requiresInternet'));
+  };
+
+  const handleShare = async () => {
+    if (!receipt) return;
+    const text = [
+      `${t('receipts.detail')} ${receipt?.number ?? id}`,
+      new Date(receipt!.issuedAt).toLocaleString(),
+      '',
+      ...(receipt!.items.map((i) => `${i.name} x${i.qty} — ${formatCents(i.lineTotalCents)}`)),
+      '',
+      `${t('checkout.total')}: ${formatCents(receipt!.totalCents)}`,
+    ].join('\n');
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${t('receipts.detail')} ${receipt?.number}`,
+          text,
+        });
+        setToast(t('receipts.shareSuccess', 'Shared'));
+      } catch (e) {
+        if ((e as Error).name !== 'AbortError') setToast(t('common.error'));
+      }
+    } else {
+      await navigator.clipboard.writeText(text);
+      setToast(t('receipts.copiedToClipboard', 'Copied to clipboard'));
+    }
+  };
+
+  const handleQuickReorder = () => {
+    if (!receipt) return;
+    const reorderItems = receipt.items.map((item, i) => ({
+      productId: `reorder-${i}`,
+      name: item.name,
+      qty: item.qty,
+      unitPriceCents: item.unitPriceCents,
+      vatRate: item.vatRate,
+    }));
+    history.push('/checkout', { reorderItems });
   };
 
   if (!merchantId) {
@@ -137,7 +188,14 @@ const ReceiptDetailPage: React.FC = () => {
         <p><strong>{t('checkout.subtotal')}:</strong> {formatCents(receipt.subtotalCents)}</p>
         <p><strong>{t('checkout.tax')}:</strong> {formatCents(receipt.taxCents)}</p>
         <p><strong>{t('checkout.total')}:</strong> {formatCents(receipt.totalCents)}</p>
-        <IonButton expand="block" fill="outline" onClick={() => handleAction('send')}>{t('receipts.send')}</IonButton>
+        <IonButton expand="block" fill="solid" color="primary" onClick={handleQuickReorder}>
+          <IonIcon icon={repeatOutline} slot="start" />
+          {t('receipts.quickReorder')}
+        </IonButton>
+        <IonButton expand="block" fill="outline" onClick={() => handleAction('send')}>
+          <IonIcon icon={shareOutline} slot="start" />
+          {t('receipts.send')}
+        </IonButton>
         <IonButton expand="block" fill="outline" onClick={() => handleAction('print')}>{t('receipts.print')}</IonButton>
         <IonButton expand="block" color="warning" disabled={!canVoidRefund} onClick={() => handleAction('void')}>{t('receipts.void')}</IonButton>
         <IonButton expand="block" color="medium" disabled={!canVoidRefund} onClick={() => handleAction('refund')}>{t('receipts.refund')}</IonButton>

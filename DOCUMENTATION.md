@@ -1,8 +1,8 @@
 # SPID SSO POC — Project Documentation
 
-**Document version:** 1.0  
+**Document version:** 1.1  
 **Last updated:** February 2025  
-**Purpose:** Stakeholder-ready technical and architectural documentation of the SPID (Sistema Pubblico di Identità Digitale) Single Sign-On proof-of-concept.
+**Purpose:** Stakeholder-ready technical and architectural documentation of the SPID (Sistema Pubblico di Identità Digitale) Single Sign-On proof-of-concept and POS Receipt application.
 
 ---
 
@@ -48,6 +48,24 @@ The end-to-end flow has been validated: **Login with SPID** in the app → syste
 - **SPID metadata**: Documented and validated flow with Signicat SPID metadata registration so the SPID validator (AgID) accepts the request.
 - **Operational scripts**: ngrok URL is read from the ngrok API and written into `server/.env`, `mobile/src/config.ts`, and (optionally) `mobile/config.xml` for App Links host, so the team can run with a changing ngrok URL without manual edits.
 - **Stable mobile UX**: Routing fixed so the app shows the Login screen on both browser (`/`) and Cordova (`/index.html`), and the callback page no longer auto-refreshes (eliminating the previous redirect loop).
+
+### 2.1 POS Receipt features
+
+The app includes a full **Point of Sale (POS) Receipt** workflow built on top of SPID authentication:
+
+| Feature | Description |
+|---------|-------------|
+| **Merchant selection** | After login, user selects a merchant (e.g. Caffè Roma, Trattoria Bella). Multi-merchant support with seed data. |
+| **Checkout** | Product grid with search; add to cart; select payment method (Cash, Card, Wallet, Split); issue receipt. |
+| **Products** | CRUD for products (name, price, VAT, category, SKU). Swipe-to-edit and deactivate. Load sample data for empty state. |
+| **Customers** | CRUD for customers (name, email, phone). |
+| **Receipts** | List grouped by date (today, yesterday, this week, older). Filter by status (Completed, Voided, Refunded) and payment method. Receipt detail with share and quick reorder. |
+| **Reports** | Today's sales summary; CSV export with date range picker. |
+| **Offline support** | Products and receipts cached in IndexedDB (Dexie). Receipts created offline sync when back online. Offline badge in header. |
+| **Auth guard** | All routes except `/login` require authentication. Dev login (skip SPID) available when `BASE_URL` is localhost. |
+| **Design system** | Vibrant theme (teal primary, coral secondary); design tokens; animations (list fade-in, cart pulse, receipt celebration). |
+| **i18n** | English, Italian, German translations. |
+| **Wow features** | Receipt celebration (confetti); Today's sales card; Quick reorder from receipt; Share receipt (Web Share API); Skeleton loading. |
 
 ---
 
@@ -216,11 +234,11 @@ sequenceDiagram
     B->>B: Validate ID token, nonce. Build user claims
     B->>B: Sign our JWT (15 min)
     B->>A: 200 { access_token, user }
-    A->>A: Store JWT, navigate to Home
-    A->>B: GET /api/me with Bearer JWT
+    A->>A: Store JWT, navigate to Merchant select
+    A->>B: GET /api/me with Bearer JWT (optional)
     B->>B: Verify JWT
     B->>A: 200 { message, user }
-    A->>U: Show profile (Home)
+    A->>U: Show Merchant select → Checkout
 ```
 
 ### 5.2 Backend auth state flow
@@ -251,23 +269,27 @@ stateDiagram-v2
 flowchart TD
     A([App launch]) --> B{Has JWT?}
     B -->|No| C[Login screen]
-    B -->|Yes| D[Home screen]
-    C --> E[Tap Login with SPID]
-    E --> F[System browser opens]
-    F --> G["Signicat / SPID login"]
-    G --> H[Callback page in browser]
-    H --> I[User taps Open app]
-    I --> J["handleOpenURL: smartsense://..."]
-    J --> K[Parse code, state]
+    B -->|Yes| D[Merchant select]
+    C --> E[Tap Login with SPID or Dev login]
+    E --> F{SPID?}
+    F -->|Yes| G[System browser opens]
+    G --> H["Signicat / SPID login"]
+    H --> I[Callback page in browser]
+    I --> J[User taps Open app]
+    J --> K["handleOpenURL: smartsense://..."]
     K --> L["POST /auth/exchange"]
-    L --> M{Success?}
-    M -->|Yes| N[Store JWT, go to Home]
-    M -->|No| O[Alert error]
-    N --> D
-    D --> P["GET /api/me"]
-    P --> Q[Show user JSON]
-    Q --> R[Logout]
-    R --> C
+    F -->|No| M["POST /auth/dev-token"]
+    L --> N{Success?}
+    M --> N
+    N -->|Yes| O[Store JWT, go to Merchant select]
+    N -->|No| P[Alert error]
+    P --> C
+    O --> D
+    D --> Q[Select merchant]
+    Q --> R[Checkout]
+    R --> S[Products / Receipts / Customers / Reports / Settings]
+    S --> T[Logout]
+    T --> C
 ```
 
 ### 5.4 Token and claims data flow
@@ -334,7 +356,13 @@ flowchart LR
 | **Auth start** | OIDC discovery with `openid-client`; generate state, nonce, code_verifier, code_challenge; store in session; redirect to Signicat authorize URL. | `src/routes/auth.ts` (GET /auth/spid/start) |
 | **Callback** | Return HTML with “Login received” and two links (smartsense:// and HTTPS); no meta refresh or JS redirect. | `src/routes/auth.ts` (GET /auth/callback) |
 | **Exchange** | Validate state (one-time, TTL); exchange code with Signicat (with code_verifier); validate ID token and nonce; mint our JWT (15 min); return access_token and user. | `src/routes/auth.ts` (POST /auth/exchange) |
+| **Dev token** | POST /auth/dev-token for local development; skips SPID when BASE_URL is localhost. | `src/routes/auth.ts` |
 | **Protected API** | JWT middleware; decode and attach user; return profile. | `src/routes/api.ts` (GET /api/me) |
+| **Products** | CRUD for products; merchant-scoped. | `src/routes/products.ts`, `src/store/products.ts` |
+| **Receipts** | Create and list receipts; date range and status filters. | `src/routes/receipts.ts`, `src/store/receipts.ts` |
+| **Customers** | CRUD for customers; merchant-scoped. | `src/routes/customers.ts`, `src/store/customers.ts` |
+| **Merchants** | List merchants for selection. | `src/store/merchants.ts` |
+| **Seed** | Sample merchants, products, customers, receipts. | `src/seed.ts` |
 | **Asset links** | Serve `/.well-known/assetlinks.json` with package name and SHA256 fingerprint from env. | `src/routes/wellKnown.ts` |
 | **Session store** | In-memory Map keyed by state; fields: state, nonce, codeVerifier, correlationId, createdAt; one-time use and 5‑min TTL. | `src/store.ts` |
 
@@ -342,12 +370,20 @@ flowchart LR
 
 | Area | Implementation | File(s) |
 |------|----------------|--------|
-| **Base URL** | Single source: `src/config.ts` (`BASE_URL`); updated by ngrok script. | `src/config.ts` |
-| **Login** | Button opens `BASE_URL/auth/spid/start` in system browser via Cordova InAppBrowser. | `src/pages/LoginPage.tsx` |
+| **Base URL** | Single source: `src/config.ts` (`BASE_URL`); updated by ngrok script. Supports `.env.local` for `VITE_BASE_URL`. | `src/config.ts` |
+| **Login** | Button opens `BASE_URL/auth/spid/start` in system browser. Dev login (skip SPID) when BASE_URL is localhost. | `src/pages/LoginPage.tsx` |
 | **Deep link** | `window.handleOpenURL` set in App; Cordova plugin invokes it for `smartsense://auth/callback?...`; parse code/state and call `exchangeAndNavigate`. | `src/App.tsx` |
-| **Exchange** | POST `BASE_URL/auth/exchange` with `{ code, state }`; store `access_token` in localStorage; navigate to Home. | `src/App.tsx` (exchangeAndNavigate) |
-| **Home** | GET `BASE_URL/api/me` with `Authorization: Bearer <token>`; show JSON; Logout clears token and goes to Login. | `src/pages/HomePage.tsx` |
-| **Routing** | Routes for `/login`, `/home`, `/`, `/index.html`; root and `/index.html` redirect to /login or /home by token. | `src/App.tsx` |
+| **Exchange** | POST `BASE_URL/auth/exchange` with `{ code, state }`; store `access_token`; navigate to merchant-select or checkout. | `src/App.tsx` (exchangeAndNavigate) |
+| **Auth guard** | `PrivateRoute` and `PublicLoginRoute`; all routes except `/login` require JWT. | `src/components/AuthGuard.tsx` |
+| **Merchant** | Context for selected merchant; merchant selection page. | `src/contexts/MerchantContext.tsx`, `src/pages/MerchantSelectPage.tsx` |
+| **Checkout** | Product grid, cart, payment modal, issue receipt. Today's sales card. Quick reorder from receipt. | `src/pages/CheckoutPage.tsx` |
+| **Products** | List, add/edit, swipe-to-edit/deactivate, sample data seed. | `src/pages/ProductsPage.tsx`, `src/pages/ProductFormPage.tsx` |
+| **Customers** | List, add/edit, delete with confirmation. | `src/pages/CustomersPage.tsx`, `src/pages/CustomerFormPage.tsx` |
+| **Receipts** | List grouped by date, filters, receipt detail with share and repeat order. | `src/pages/ReceiptsPage.tsx`, `src/pages/ReceiptDetailPage.tsx` |
+| **Reports** | Today's sales, CSV export with date range. | `src/pages/ReportsPage.tsx` |
+| **Offline** | Dexie (IndexedDB) for products and receipts; sync when online. Connectivity and Sync contexts. | `src/store/*.ts`, `src/contexts/ConnectivityContext.tsx`, `src/contexts/SyncContext.tsx` |
+| **Theme** | Vibrant color palette (teal, coral, indigo); design tokens; animations. | `src/theme/variables.css`, `src/theme/design-tokens.css`, `src/App.css` |
+| **i18n** | react-i18next; EN, IT, DE. | `src/i18n/`, `src/i18n/locales/` |
 | **Build** | Vite with `base: './'` so assets load in Cordova WebView; output to `www/`. | `vite.config.ts` |
 | **Cordova** | Android platform; plugins: InAppBrowser, custom URL scheme (smartsense); intent-filters for smartsense and HTTPS (App Links). | `config.xml`, `platforms/android` |
 
@@ -374,7 +410,8 @@ flowchart LR
 
 ## 8. Deployment and operations
 
-- **Run backend**: `cd server && npm run dev` (or `npm run server` from root).
+- **Run backend**: `cd server && npm run dev` (or `npm run server` from root). Server seeds sample data when `SEED_SAMPLE_DATA=true`.
+- **Local dev (no ngrok)**: Set `mobile/.env.local` with `VITE_BASE_URL=http://localhost:4000`; use "Dev login (skip SPID)" to test POS without Signicat.
 - **Run ngrok**: `ngrok http <PORT>` (PORT from `server/.env`).
 - **Update config**: `node scripts/start-ngrok-and-update.js`; then set Signicat redirect URI to the printed `https://<host>/auth/callback`.
 - **Build and run app**: `cd mobile && npm run build && npx cordova prepare android && npx cordova run android`.

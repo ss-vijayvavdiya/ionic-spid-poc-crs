@@ -1,0 +1,114 @@
+/**
+ * Ionic Theme — Vibrant, modern color palette
+ * Trending app aesthetic: warm coral + teal + soft backgrounds
+ */
+
+:root {
+  /* Primary — Teal (trustworthy, professional) */
+  --ion-color-primary: #0d9488;
+  --ion-color-primary-rgb: 13, 148, 136;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #0b8277;
+  --ion-color-primary-tint: #259f94;
+
+  /* Secondary — Coral (warm, inviting) */
+  --ion-color-secondary: #f43f5e;
+  --ion-color-secondary-rgb: 244, 63, 94;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #d73753;
+  --ion-color-secondary-tint: #f5526e;
+
+  /* Tertiary — Indigo (modern accent) */
+  --ion-color-tertiary: #6366f1;
+  --ion-color-tertiary-rgb: 99, 102, 241;
+  --ion-color-tertiary-contrast: #ffffff;
+  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
+  --ion-color-tertiary-shade: #575ae0;
+  --ion-color-tertiary-tint: #7375f2;
+
+  /* Success — Emerald */
+  --ion-color-success: #10b981;
+  --ion-color-success-rgb: 16, 185, 129;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #0ea372;
+  --ion-color-success-tint: #28c08e;
+
+  /* Warning — Amber */
+  --ion-color-warning: #f59e0b;
+  --ion-color-warning-rgb: 245, 158, 11;
+  --ion-color-warning-contrast: #000000;
+  --ion-color-warning-contrast-rgb: 0, 0, 0;
+  --ion-color-warning-shade: #d88b0a;
+  --ion-color-warning-tint: #f6a823;
+
+  /* Danger — Rose */
+  --ion-color-danger: #ef4444;
+  --ion-color-danger-rgb: 239, 68, 68;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #d23c3c;
+  --ion-color-danger-tint: #f15757;
+
+  /* Light — Soft slate */
+  --ion-color-light: #f1f5f9;
+  --ion-color-light-rgb: 241, 245, 249;
+  --ion-color-light-contrast: #1e293b;
+  --ion-color-light-contrast-rgb: 30, 41, 59;
+  --ion-color-light-shade: #d4d8db;
+  --ion-color-light-tint: #f2f6fa;
+
+  /* Medium — Muted slate */
+  --ion-color-medium: #64748b;
+  --ion-color-medium-rgb: 100, 116, 139;
+  --ion-color-medium-contrast: #ffffff;
+  --ion-color-medium-contrast-rgb: 255, 255, 255;
+  --ion-color-medium-shade: #58667a;
+  --ion-color-medium-tint: #748297;
+
+  /* Dark — Slate */
+  --ion-color-dark: #1e293b;
+  --ion-color-dark-rgb: 30, 41, 59;
+  --ion-color-dark-contrast: #ffffff;
+  --ion-color-dark-contrast-rgb: 255, 255, 255;
+  --ion-color-dark-shade: #1a2434;
+  --ion-color-dark-tint: #353d4f;
+
+  /* App-level backgrounds & text */
+  --ion-background-color: #f8fafc;
+  --ion-background-color-rgb: 248, 250, 252;
+  --ion-text-color: #1e293b;
+  --ion-text-color-rgb: 30, 41, 59;
+
+  /* Card & surface */
+  --ion-card-background: #ffffff;
+  --ion-item-background: #ffffff;
+
+  /* Toolbar */
+  --ion-toolbar-background: var(--ion-color-primary);
+  --ion-toolbar-border-color: rgba(255, 255, 255, 0.12);
+  --ion-toolbar-color: #ffffff;
+
+  /* Tab bar */
+  --ion-tab-bar-background: #ffffff;
+  --ion-tab-bar-color: var(--ion-color-medium);
+  --ion-tab-bar-color-selected: var(--ion-color-primary);
+
+  /* Border radius (trending: more rounded) */
+  --border-radius: 12px;
+  --ion-card-border-radius: 12px;
+}
+
+/* iOS mode overrides */
+.ios {
+  --ion-toolbar-background: var(--ion-color-primary);
+  --ion-toolbar-color: #ffffff;
+}
+
+/* Material Design mode overrides */
+.md {
+  --ion-toolbar-background: var(--ion-color-primary);
+  --ion-toolbar-color: #ffffff;
+}

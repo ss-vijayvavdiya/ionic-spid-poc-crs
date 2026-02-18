@@ -1,13 +1,15 @@
 /**
  * App shell with IonMenu (side menu) and IonRouterOutlet.
  * All routes except /login require authentication (AuthGuard).
+ * When authenticated and on /login, redirect to checkout (handles post-SPID flow).
  */
-import React from 'react';
-import { IonMenu, IonRouterOutlet, IonContent } from '@ionic/react';
-import { Route, Redirect } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { IonMenu, IonRouterOutlet, IonContent, useIonRouter } from '@ionic/react';
+import { Route, Redirect, useLocation } from 'react-router-dom';
 import Menu from '../components/Menu';
 import { PrivateRoute, PublicLoginRoute } from '../components/AuthGuard';
 import { useAuth } from '../contexts/AuthContext';
+import { useMerchant } from '../contexts/MerchantContext';
 
 // Pages
 import LoginPage from '../pages/LoginPage';
@@ -30,6 +32,20 @@ import ProfilePage from '../pages/ProfilePage';
 
 const AppShell: React.FC = () => {
   const { token } = useAuth();
+  const { merchants, selectedMerchant } = useMerchant();
+  const ionRouter = useIonRouter();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!token) return;
+    if (location.pathname === '/login') {
+      ionRouter.push('/checkout', 'root');
+      return;
+    }
+    if (merchants.length > 1 && !selectedMerchant && location.pathname !== '/merchant-select') {
+      ionRouter.push('/merchant-select', 'root');
+    }
+  }, [token, merchants.length, selectedMerchant, location.pathname, ionRouter]);
 
   return (
     <>

@@ -1,7 +1,7 @@
 /**
  * Auth routes: start SPID login, handle IdP callback, exchange code for our JWT.
  */
-import { Router } from 'express';
+import { Router, Request } from 'express';
 import { Issuer, generators, Client } from 'openid-client';
 import jwt from 'jsonwebtoken';
 import { config, REDIRECT_URI } from '../config';
@@ -9,6 +9,42 @@ import { saveSession, getAndConsumeSession } from '../store';
 import crypto from 'crypto';
 
 const router = Router();
+
+function buildCallbackHtml(currentUrl: string, appSchemeUrl: string): string {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SPID Login Received</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 24px; line-height: 1.5; }
+    .btn { display: inline-block; margin-top: 12px; padding: 10px 14px; background: #1976d2; color: #fff; text-decoration: none; border-radius: 6px; }
+    .btn.secondary { background: #2e7d32; }
+    code { background: #f2f2f2; padding: 2px 4px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h2>Login received</h2>
+  <p>If the app did not open automatically, tap <strong>Continue</strong>.</p>
+  <a class="btn" href="${currentUrl}">Continue</a>
+  <p style="margin-top: 16px;">If that still does not open the app, use the fallback:</p>
+  <a class="btn secondary" href="${appSchemeUrl}">Open in app (fallback)</a>
+  <p style="margin-top: 16px; font-size: 13px; color: #666;">Current URL: <code>${currentUrl}</code></p>
+  <script>
+    try {
+      var key = 'spid_poc_open_attempted';
+      if (!sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, '1');
+        setTimeout(function () {
+          window.location.href = "${appSchemeUrl.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}";
+        }, 800);
+      }
+    } catch (e) {}
+  </script>
+</body>
+</html>`;
+}
 
 /**
  * POST /auth/dev-token
@@ -103,48 +139,19 @@ router.get('/spid/start', async (req, res) => {
  * This is the redirect URI registered in Signicat. After the user logs in at Signicat,
  * Signicat redirects the browser here with ?code=...&state=...
  *
- * We must return HTML that:
- * (a) Lets Android App Links open the app (same URL as the link) when the host matches.
- * (b) Provides a fallback "Continue in app" button using custom scheme (smartsense://)
- *     so that when ngrok host changes and App Links don't match, the user can still
- *     open the app with the same code/state.
+ * We return HTML with buttons and an auto-redirect (after 800ms) to smartsense:// so the
+ * app opens. This approach (from ionic-spid-poc-cdx) avoids timing issues where
+ * handleOpenURL fires before React is ready — the delay gives the app time to load.
  */
-router.get('/callback', (req, res) => {
-  const fallbackUrl = `smartsense://auth/callback?${new URLSearchParams(req.query as Record<string, string>).toString()}`;
-
-  // Build the current URL with query string for "same URL" link (helps App Links)
-  const currentQuery = new URLSearchParams(req.query as Record<string, string>).toString();
-  const base = config.BASE_URL || 'https://replace-me.ngrok-free.app';
-  const sameUrl = `${base}/auth/callback?${currentQuery}`;
-
-  // No meta refresh or JS redirect to sameUrl — that caused an infinite loop (callback
-  // page reloading itself). User must tap a link. Prefer the custom-scheme link so the app opens.
-  const html = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login received</title>
-  <style>
-    body { font-family: system-ui; padding: 2rem; max-width: 360px; margin: 0 auto; }
-    .btn { display: inline-block; margin-top: 0.5rem; padding: 0.75rem 1.5rem; color: white; text-decoration: none; border-radius: 8px; text-align: center; font-weight: bold; }
-    .btn-primary { background: #0066cc; }
-    .btn-secondary { background: #555; }
-    a:active { opacity: 0.9; }
-    p { color: #333; }
-  </style>
-</head>
-<body>
-  <p><strong>Login received.</strong></p>
-  <p>Tap the button below to return to the app and finish login.</p>
-  <p><a href="${fallbackUrl}" class="btn btn-primary">Open app (finish login)</a></p>
-  <p style="margin-top:1rem;font-size:0.85em;color:#666">If nothing happens: long-press the button above and choose &quot;Open with&quot; or &quot;Open in app&quot; (SPID POC).</p>
-  <p style="margin-top:1.5rem;font-size:0.9em;color:#666">Or try (App Links):</p>
-  <p><a href="${sameUrl}" class="btn btn-secondary">Continue (same URL)</a></p>
-</body>
-</html>`;
-
-  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+router.get('/callback', (req: Request, res) => {
+  const code = typeof req.query.code === 'string' ? req.query.code : '';
+  const state = typeof req.query.state === 'string' ? req.query.state : '';
+  const baseUrl = config.BASE_URL || '';
+  const currentUrl = baseUrl ? `${baseUrl}${req.originalUrl}` : req.originalUrl;
+  const appSchemeUrl = `smartsense://auth/callback?${new URLSearchParams({ code, state }).toString()}`;
+  const html = buildCallbackHtml(currentUrl, appSchemeUrl);
+  res.setHeader('Content-Type', 'text/html');
+  res.setHeader('Cache-Control', 'no-store');
   res.send(html);
 });
 
@@ -175,8 +182,9 @@ router.post('/exchange', async (req, res) => {
   try {
     const client = await getClient();
     // Params from the app's POST body (code and state from the callback URL)
-    const params = { code, state };
+    const params = { code, state, iss: config.SIGNICAT_ISSUER };
     // Include code_verifier in the PKCE checks so the token endpoint accepts the code.
+    // iss is required when Signicat's discovery has authorization_response_iss_parameter_supported=true
     const tokenSet = await client.callback(REDIRECT_URI, params, {
       state,
       nonce: session.nonce,
@@ -215,8 +223,14 @@ router.post('/exchange', async (req, res) => {
       user,
     });
   } catch (e) {
-    console.error(`[auth] exchange error correlationId=${correlationId}`, e);
-    res.status(400).json({ error: 'Token exchange failed' });
+    const msg = e instanceof Error ? e.message : String(e);
+    const body = (e as { response?: { body?: unknown } })?.response?.body;
+    console.error(`[auth] exchange error correlationId=${correlationId}`, msg, body || e);
+    res.status(400).json({
+      error: 'Token exchange failed',
+      message: msg,
+      ...(body && typeof body === 'object' && { details: body }),
+    });
   }
 });
 

@@ -66,6 +66,9 @@
     "detail": "Dettaglio scontrino",
     "send": "Invia",
     "print": "Stampa",
+    "quickReorder": "Ripeti ordine",
+    "shareSuccess": "Condiviso",
+    "copiedToClipboard": "Copiato negli appunti",
     "void": "Annulla",
     "refund": "Rimborso",
     "confirmVoid": "Sei sicuro di voler annullare questo scontrino?",
@@ -89,7 +92,9 @@
     "empty": "Nessun prodotto ancora. Aggiungi il tuo primo prodotto per iniziare.",
     "noResults": "Nessun prodotto corrisponde alla ricerca",
     "loadSampleData": "Carica dati di esempio",
-    "sampleDataLoaded": "Dati di esempio caricati"
+    "sampleDataLoaded": "Dati di esempio caricati",
+    "deactivate": "Disattiva",
+    "confirmDeactivate": "Disattivare {{name}}? Non sarà più visibile in cassa."
   },
   "settings": {
     "title": "Impostazioni",
@@ -125,6 +130,9 @@
     "todaySales": "Vendite di oggi",
     "exportCsv": "Esporta CSV",
     "exportDate": "Data esportazione",
+    "exportFrom": "Da",
+    "exportTo": "A",
+    "dateRangeInvalid": "La data di inizio deve essere prima della data di fine",
     "exportSuccess": "CSV esportato"
   },
   "customers": {

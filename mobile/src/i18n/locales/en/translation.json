@@ -66,6 +66,9 @@
     "detail": "Receipt Detail",
     "send": "Send",
     "print": "Print",
+    "quickReorder": "Repeat order",
+    "shareSuccess": "Shared",
+    "copiedToClipboard": "Copied to clipboard",
     "void": "Void",
     "refund": "Refund",
     "confirmVoid": "Are you sure you want to void this receipt?",
@@ -89,7 +92,9 @@
     "empty": "No products yet. Add your first product to get started.",
     "noResults": "No products match your search",
     "loadSampleData": "Load sample data",
-    "sampleDataLoaded": "Sample data loaded"
+    "sampleDataLoaded": "Sample data loaded",
+    "deactivate": "Deactivate",
+    "confirmDeactivate": "Deactivate {{name}}? It will be hidden from checkout."
   },
   "settings": {
     "title": "Settings",
@@ -125,6 +130,9 @@
     "todaySales": "Today's sales",
     "exportCsv": "Export CSV",
     "exportDate": "Export date",
+    "exportFrom": "From",
+    "exportTo": "To",
+    "dateRangeInvalid": "From date must be before To date",
     "exportSuccess": "CSV exported"
   },
   "customers": {

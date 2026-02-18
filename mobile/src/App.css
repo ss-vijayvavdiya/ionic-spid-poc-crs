@@ -1,5 +1,77 @@
 /* Phase 3: Design system + animations */
 
+/* Global theme overrides */
+ion-content {
+  --background: var(--ion-background-color);
+}
+
+ion-card {
+  --background: #ffffff;
+  box-shadow: var(--shadow-card);
+  border-radius: 12px;
+}
+
+ion-card:hover,
+ion-card:focus-within {
+  box-shadow: var(--shadow-card-hover);
+}
+
+ion-toolbar {
+  --background: var(--ion-color-primary);
+  --color: #ffffff;
+  --border-color: rgba(255, 255, 255, 0.12);
+}
+
+ion-toolbar ion-title,
+ion-toolbar ion-button,
+ion-toolbar ion-menu-button {
+  --color: #ffffff;
+  color: #ffffff;
+}
+
+ion-menu-button {
+  --color: #ffffff;
+}
+
+ion-list-header {
+  color: var(--ion-color-primary);
+  font-weight: 600;
+}
+
+ion-item {
+  --background: #ffffff;
+}
+
+ion-fab-button {
+  --background: var(--ion-color-primary);
+  --background-activated: var(--ion-color-primary-shade);
+  --background-hover: var(--ion-color-primary-tint);
+  --color: #ffffff;
+  --box-shadow: 0 4px 16px rgba(13, 148, 136, 0.35);
+}
+
+ion-chip {
+  --background: rgba(100, 116, 139, 0.12);
+  --color: var(--ion-color-medium);
+  font-weight: 500;
+}
+
+ion-chip[color="primary"] {
+  --background: var(--ion-color-primary);
+  --color: #ffffff;
+}
+
+ion-searchbar {
+  --background: #ffffff;
+  --border-radius: 12px;
+  --box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+ion-button {
+  --border-radius: 12px;
+  font-weight: 600;
+}
+
 /* List layouts */
 .product-list {
   display: flex;
@@ -65,4 +137,22 @@
 /* Empty state */
 .empty-state {
   margin: var(--space-4, 16px) 0;
+}
+
+/* Skeleton loading pulse */
+.skeleton-pulse {
+  background: linear-gradient(
+    90deg,
+    var(--ion-color-light) 25%,
+    var(--ion-color-light-shade) 50%,
+    var(--ion-color-light) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+@keyframes skeletonPulse {
+  0%, 100% { background-position: 200% 0; }
+  50% { background-position: -200% 0; }
 }

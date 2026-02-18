@@ -16,6 +16,9 @@
       "ANDROID_HOST": " ",
       "ANDROID_PATHPREFIX": "/",
       "PACKAGE_NAME": "com.smartsense.spidpoc"
+    },
+    "cordova-plugin-network-information": {
+      "PACKAGE_NAME": "com.smartsense.spidpoc"
     }
   },
   "dependent_plugins": {}
