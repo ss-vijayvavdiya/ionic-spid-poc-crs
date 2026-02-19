@@ -1,5 +1,5 @@
 /**
- * Checkout: product grid, cart, payment modal, issue receipt.
+ * Checkout: product grid, cart, inline payment selector, issue receipt.
  */
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -17,10 +17,6 @@ import {
   IonLabel,
   IonButton,
   IonIcon,
-  IonModal,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
   IonSpinner,
   IonToast,
 } from '@ionic/react';
@@ -81,7 +77,6 @@ const CheckoutPage: React.FC = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('CASH');
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [issuing, setIssuing] = useState(false);
   const [toast, setToast] = useState('');
   const [pulseProductId, setPulseProductId] = useState<string | null>(null);
@@ -177,13 +172,14 @@ const CheckoutPage: React.FC = () => {
   const { subtotalCents, taxCents, totalCents } = computeTotals(cart);
 
   const handleIssueReceipt = async () => {
-    if (!merchantId || cart.length === 0) return;
-    setShowPaymentModal(true);
-  };
-
-  const confirmPaymentAndIssue = async () => {
-    if (!merchantId || cart.length === 0) return;
-    setShowPaymentModal(false);
+    if (cart.length === 0) {
+      setToast(t('checkout.noProducts'));
+      return;
+    }
+    if (!merchantId) {
+      setToast(t('merchant.select'));
+      return;
+    }
     setIssuing(true);
     const clientReceiptId = generateUUID();
     const items = cart.map((item) => ({
@@ -364,6 +360,22 @@ const CheckoutPage: React.FC = () => {
           <p style={{ margin: '0.25rem 0' }}>
             <strong>{t('checkout.total')}:</strong> {formatCents(totalCents)}
           </p>
+          <p style={{ margin: '0.5rem 0 0.25rem', fontSize: '0.9em', color: 'var(--ion-color-medium)' }}>
+            {t('checkout.paymentMethod')}
+          </p>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
+            {PAYMENT_OPTIONS.map((opt) => (
+              <IonButton
+                key={opt.method}
+                size="small"
+                fill={paymentMethod === opt.method ? 'solid' : 'outline'}
+                onClick={() => setPaymentMethod(opt.method)}
+              >
+                <IonIcon icon={opt.icon} style={{ marginRight: 4 }} />
+                {t(`checkout.${opt.method.toLowerCase()}`)}
+              </IonButton>
+            ))}
+          </div>
           <IonButton
             expand="block"
             disabled={cart.length === 0 || issuing}
@@ -372,41 +384,6 @@ const CheckoutPage: React.FC = () => {
             {issuing ? <IonSpinner name="crescent" /> : t('checkout.issueReceipt')}
           </IonButton>
         </div>
-
-        {/* Payment method modal */}
-        <IonModal
-          isOpen={showPaymentModal}
-          onDidDismiss={() => setShowPaymentModal(false)}
-          breakpoints={[0, 0.5]}
-          initialBreakpoint={0.5}
-        >
-          <IonHeader>
-            <IonToolbar>
-              <IonTitle>{t('checkout.paymentMethod')}</IonTitle>
-              <IonButton slot="end" fill="clear" onClick={() => setShowPaymentModal(false)}>
-                {t('common.cancel')}
-              </IonButton>
-            </IonToolbar>
-          </IonHeader>
-          <IonContent className="ion-padding">
-            {PAYMENT_OPTIONS.map((opt) => (
-              <IonItem
-                key={opt.method}
-                button
-                onClick={() => {
-                  setPaymentMethod(opt.method);
-                }}
-                detail={paymentMethod === opt.method}
-              >
-                <IonIcon slot="start" icon={opt.icon} />
-                <IonLabel>{t(`checkout.${opt.method.toLowerCase()}`)}</IonLabel>
-              </IonItem>
-            ))}
-            <IonButton expand="block" onClick={confirmPaymentAndIssue} disabled={issuing}>
-              {issuing ? <IonSpinner name="crescent" /> : t('checkout.issueReceipt')}
-            </IonButton>
-          </IonContent>
-        </IonModal>
 
         <IonToast isOpen={!!toast} message={toast} onDidDismiss={() => setToast('')} duration={2500} />
       </IonContent>

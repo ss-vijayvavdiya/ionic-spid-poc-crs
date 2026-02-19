@@ -2,7 +2,7 @@
 /**
  * Reads the current ngrok public HTTPS URL from the ngrok agent API and updates:
  *   - server/.env (BASE_URL)
- *   - mobile/src/config.ts (BASE_URL export)
+ *   - mobile/.env.local (VITE_BASE_URL)
  *
  * Prerequisites:
  *   1. ngrok must be running (e.g. "ngrok http 4000" or "ngrok http <PORT>" to match server/.env PORT).
@@ -83,32 +83,22 @@ function updateServerEnv(baseUrl) {
 }
 
 /**
- * Update mobile/src/config.ts with the new BASE_URL
+ * Update mobile/.env.local with VITE_BASE_URL (used by config.ts at build time)
  */
 function updateMobileConfig(baseUrl) {
-  const configPath = path.join(ROOT, 'mobile', 'src', 'config.ts');
-  const dir = path.dirname(configPath);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  if (!fs.existsSync(configPath)) {
-    fs.writeFileSync(
-      configPath,
-      "// Auto-updated by scripts/start-ngrok-and-update.js\n" +
-      "export const BASE_URL = '" + baseUrl + "';\n",
-      'utf8'
-    );
-    console.log('[script] Created mobile/src/config.ts');
-  } else {
-    let content = fs.readFileSync(configPath, 'utf8');
-    content = content.replace(
-      /(export\s+const\s+BASE_URL\s*=\s*)['"].*?['"]/,
-      "$1'" + baseUrl + "'"
-    );
-    if (!/BASE_URL/.test(content)) {
-      content = content.trimEnd() + "\nexport const BASE_URL = '" + baseUrl + "';\n";
-    }
-    fs.writeFileSync(configPath, content, 'utf8');
-    console.log('[script] Updated mobile/src/config.ts');
+  const envPath = path.join(ROOT, 'mobile', '.env.local');
+  let content = '';
+  if (fs.existsSync(envPath)) {
+    content = fs.readFileSync(envPath, 'utf8');
   }
+  const line = `VITE_BASE_URL=${baseUrl}\n`;
+  if (/VITE_BASE_URL=/.test(content)) {
+    content = content.replace(/VITE_BASE_URL=.*/m, `VITE_BASE_URL=${baseUrl}`);
+  } else {
+    content = content.trimEnd() + (content ? '\n' : '') + line;
+  }
+  fs.writeFileSync(envPath, content, 'utf8');
+  console.log('[script] Updated mobile/.env.local VITE_BASE_URL');
 }
 
 /**
@@ -158,7 +148,9 @@ async function main() {
   console.log('\n--- Next steps ---');
   console.log('1. Update Signicat redirect URI to:', baseUrl + '/auth/callback');
   console.log('2. Restart the server if it was already running (so it picks up new BASE_URL).');
-  console.log('3. Open in browser to test:', baseUrl + '/health');
+  console.log('3. Rebuild the mobile app: cd mobile && npm run build && npx cordova run android');
+  console.log('   (VITE_BASE_URL is baked in at build time; live reload uses the updated .env.local)');
+  console.log('4. Open in browser to test:', baseUrl + '/health');
 }
 
 main();

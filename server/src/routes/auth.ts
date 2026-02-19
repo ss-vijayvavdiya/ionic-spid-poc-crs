@@ -229,7 +229,7 @@ router.post('/exchange', async (req, res) => {
     res.status(400).json({
       error: 'Token exchange failed',
       message: msg,
-      ...(body && typeof body === 'object' && { details: body }),
+      ...(body && typeof body === 'object' ? { details: body } : {}),
     });
   }
 });
